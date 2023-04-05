@@ -1,0 +1,11 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram for Gallery System
+
+Person(employee, "Administrator", "An administrator of the gallery.")
+System(system, "Gallery", "Allows gallery administrators to manage paintings and exhibitions in gallery")
+
+Rel(employee, system, "Track paintings and exhibitions using")
+SHOW_LEGEND()
+@enduml

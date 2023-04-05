@@ -1,0 +1,10 @@
+insert into painters (painter_id, name, origin, birth_date, death_date) values ('f4c80444-5acf-4d57-8902-9f55255e9e55', 'Vincent van Gogh', 'Netherlands', '1853-03-30', '1890-07-29');
+insert into painters (painter_id, name, origin, birth_date, death_date) values ('0e1482bb-67a8-4620-842b-3f7bfb7ee175', 'Frida Kahlo', 'Mexico', '1907-07-06', '1954-07-13');
+insert into painters (painter_id, name, origin, birth_date, death_date) values ('ede04dc9-9cf9-4191-8b4e-7d91234cb49c', 'Leonardo da Vinci', 'Italy', '1452-04-15', '1519-05-02');
+insert into paintings (painting_id, gallery_id, title, year_created, painter_id) values ('3ed9654a-b773-4aa0-ae6b-b22afb636c8e', 'ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8', 'The Starry Night', 1889, 'f4c80444-5acf-4d57-8902-9f55255e9e55');
+insert into paintings (painting_id, gallery_id, title, year_created, painter_id) values ('b5fff508-79d2-4fdc-aecf-5a7b504f9fcc', 'ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8', 'Sunflowers', 1888, 'f4c80444-5acf-4d57-8902-9f55255e9e55');
+insert into paintings (painting_id, gallery_id, title, year_created, painter_id) values ('d2d6b05f-9cfb-4a54-ba3e-57dffe0fd5c6', 'ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8', 'Mona Lisa', 1506, 'ede04dc9-9cf9-4191-8b4e-7d91234cb49c');
+insert into paintings (painting_id, gallery_id, title, year_created, painter_id) values ('6ae9eaf7-5ec4-45da-a85d-45a317e711a2', 'ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8', 'The Two Fridas', 1939, '0e1482bb-67a8-4620-842b-3f7bfb7ee175');
+insert into paintings (painting_id, gallery_id, title, year_created, painter_id) values ('8617ca1a-c7aa-4a32-8067-54d5efa5c8d2', '23a0f2de-7f9c-446c-adb4-352d7893de28', 'Self-Portrait with Thorn Necklace and Hummingbird', 1498, 'ede04dc9-9cf9-4191-8b4e-7d91234cb49c');
+insert into paintings (painting_id, gallery_id, title, year_created, painter_id) values ('893fbf00-8594-4e38-b2b9-65c5a0653e53', '23a0f2de-7f9c-446c-adb4-352d7893de28', 'The Broken Column', 1944, '0e1482bb-67a8-4620-842b-3f7bfb7ee175');
+insert into paintings (painting_id, gallery_id, title, year_created, painter_id) values ('f32e5cb2-1890-4572-812b-fdc671537b45', 'ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8', 'Hello man', 1993, '');

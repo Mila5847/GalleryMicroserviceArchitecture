@@ -1,0 +1,47 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include DEVICONS/angular.puml
+!include DEVICONS/java.puml
+!include DEVICONS/msql_server.puml
+!include FONTAWESOME/users.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(employee, "Administrator", "An administrator of the gallery")
+System_Boundary(gallery_system, "Gallery System") {
+Container(web_app, "Wep Application", "JavaScript", "Delivers the static content and the Internet gallery single page application")
+Container(spa, "Single-Page Application", "JavaScript/React", "Provides all the Internet gallery's functionality to the administrator via their web browser.")
+Container(api_gateway, "API Gateway", "Java", "Provides Internet gallery functionality via a JSON/HTTPS API. Handles incoming requests and forwards them to the appropriate microservice", $sprite="java")
+Container(gallery_service, "Gallery Service", "Java", "Provides information about art galleries", $sprite="java")
+Container(painting_service, "Painting Service", "Java", "Provides information about paintings", $sprite="java")
+Container(exhibition_service, "Exhibition Service", "Java", "Aggregates information about exhibitions, galleries, sculptures, and paintings", $sprite="java")
+Container(sculpture_service, "Sculpture Service", "Java", "Provides information about sculptures", $sprite="java")
+ContainerDb(gallery_db, "Gallery Database", "Microsoft SQL", "Holds gallery information", $sprite="msql_server")
+ContainerDb(painting_db, "Painting Database", "Microsoft SQL", "Holds painting information", $sprite="msql_server")
+ContainerDb(sculpture_db, "Sculpture Database", "Microsoft SQL", "Holds sculpture information", $sprite="msql_server")
+ContainerDb(exhibition_db, "Exhibition Database", "Microsoft SQL", "Holds exhibition information", $sprite="msql_server")
+}
+
+Rel(employee, web_app, "Visits gallery.com using", "HTTPS")
+Rel_R(web_app, spa, "Delivers to the administrator's web browser")
+Rel(employee, spa, "Views gallery and makes modifications")
+Rel(spa, api_gateway, "Makes API calls to", "JSON/HTTPS")
+Rel(api_gateway, gallery_service, "Makes API calls to", "HTTPS/JSON")
+Rel(api_gateway, painting_service, "Makes API calls to", "HTTPS/JSON")
+Rel(api_gateway, exhibition_service, "Makes API calls to", "HTTPS/JSON")
+Rel(api_gateway, sculpture_service, "Makes API calls to", "HTTPS/JSON")
+Rel(exhibition_service, sculpture_service, "Makes API calls to", "HTTPS/JSON")
+
+Rel(gallery_service, gallery_db, "Reads/Writes", "JDPC")
+Rel(painting_service, painting_db, "Reads/Writes", "JDPC")
+Rel(sculpture_service, sculpture_db, "Reads/Writes", "JDPC")
+Rel_R(exhibition_service, exhibition_db, "Reads/Writes", "JDPC")
+
+Rel(exhibition_service, gallery_service, "Makes API calls to", "HTTPS/JSON")
+Rel(exhibition_service, painting_service, "Makes API calls to", "HTTPS/JSON")
+
+@enduml

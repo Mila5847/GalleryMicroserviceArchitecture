@@ -1,0 +1,3 @@
+insert into sculptures (sculpture_id, gallery_id, title, material, texture) values ('acf18748-b00c-4f3a-9d0b-b1b1fdf9c240', 'ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8', 'Vase', 'Wood', 'Rough');
+insert into sculptures (sculpture_id, gallery_id, title, material, texture) values ('04875097-6dab-451c-b08d-b1e48da9ded8', 'ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8', 'Face', 'Stone', 'Smooth');
+insert into sculptures (sculpture_id, gallery_id, title, material, texture) values ('2872b8a2-e691-4115-891c-bed7187392d0', 'ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8', 'Hand', 'Clay', 'Bumpy');

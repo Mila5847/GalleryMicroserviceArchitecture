@@ -1,0 +1,100 @@
+@startuml
+!define ENTITY(entityName) class entityName << Entity >>
+!define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
+!define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
+
+rectangle "Art Venues And Locations Subdomain" {
+    rectangle "  "{
+        ENTITY(Gallery) {
+            -name: String
+            -openFrom: String
+            -openUntil: String
+        }
+
+        VALUE_OBJECT(GalleryIdentifier) {
+            -galleryId: UUID
+        }
+
+        VALUE_OBJECT(Address) {
+            -streetAddress: String
+            -city: String
+            -province: String
+            -country: String
+            -postalCode: String
+        }
+
+        Gallery "1" o-- "1" Address
+        Gallery --> GalleryIdentifier
+
+        AGGREGATE_ROOT(Gallery)
+    }
+}
+rectangle "Works of art and creators subdomain" {
+    rectangle " "{
+        ENTITY(Painting) {
+            -title: String
+            -yearCreated: String
+        }
+
+        VALUE_OBJECT(PaintingIdentifier) {
+            -paintingId: UUID
+        }
+
+        Painting --> PaintingIdentifier
+        Painting "*" --o "1" Gallery
+        AGGREGATE_ROOT(Painting)
+
+        note "A painting cannot have more than one painter" as paintingInvariant
+    }
+
+    rectangle "  "{
+         ENTITY(Painter) {
+                -name: String
+                -origin: String
+                -birthDate: String
+                -deathDate: String
+         }
+
+         VALUE_OBJECT(PainterIdentifier) {
+                -painterId: UUID
+         }
+
+         Painter --> PainterIdentifier
+         Painter "1" --o "1" Painting
+    }
+
+       rectangle "  "{
+             ENTITY(Sculpture) {
+                   -title: String
+                   -material: String
+                   -texture: String
+             }
+             Sculpture "*" --o "1" Gallery
+
+       }
+}
+rectangle "Art events subdomain" {
+    rectangle "Art events subdomain"{
+        ENTITY(Exhibition) {
+            -name: String
+            -roomNumber: String
+            -duration: String
+            -startDay: String
+            -endDay: String
+        }
+        VALUE_OBJECT(ExhibitionIdentifier) {
+            -exhibitionId: UUID
+        }
+        Exhibition --> ExhibitionIdentifier
+        ExhibitionIdentifier "1" <--* "*" Sculpture
+        ExhibitionIdentifier "1" <--* "*" Painting
+
+        note "A painting cannot be in more than one exhibition at the same time" as exhibitionInvariantPainting
+        note "A sculpture cannot be in more than one exhibition at the same time" as exhibitionInvariantSculpture
+    }
+}
+
+paintingInvariant .. Painting: paintingInvariant
+exhibitionInvariantPainting .. Painting: exhibitionInvariantPainting
+exhibitionInvariantSculpture .. Sculpture: exhibitionInvariantSculpture
+@enduml

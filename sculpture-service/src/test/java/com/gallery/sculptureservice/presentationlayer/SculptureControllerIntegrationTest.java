@@ -161,8 +161,9 @@ public class SculptureControllerIntegrationTest {
         // act
         webTestClient.delete()
                 .uri(BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/sculptures/" + VALID_SCULPTURE_ID)
+                .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isNoContent();
 
         // assert
         assertTrue(sculptureRepository.findByGalleryIdentifier_GalleryIdAndSculptureIdentifier_SculptureId(VALID_GALLERY_ID, VALID_SCULPTURE_ID) == null);

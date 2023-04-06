@@ -4,8 +4,8 @@
 title System Context Diagram for Gallery System
 
 Person(employee, "Administrator", "An administrator of the gallery.")
-System(system, "Gallery", "Allows gallery administrators to manage paintings and exhibitions in gallery")
+System(system, "Gallery", "Allows gallery administrators to manage the artworks in gallery")
 
-Rel(employee, system, "Track paintings and exhibitions using")
+Rel(employee, system, "Track artworks using")
 SHOW_LEGEND()
 @enduml

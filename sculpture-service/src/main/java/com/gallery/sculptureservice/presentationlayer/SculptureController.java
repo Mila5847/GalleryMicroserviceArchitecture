@@ -44,8 +44,9 @@ public class SculptureController {
     }
 
     @DeleteMapping("/sculptures/{sculptureId}")
-    public void removeSculptureByIdInGallery(@PathVariable String galleryId, @PathVariable String sculptureId){
+    public ResponseEntity<Void> removeSculptureByIdInGallery(@PathVariable String galleryId, @PathVariable String sculptureId){
         sculptureService.removeSculptureByIdInGallery(galleryId, sculptureId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

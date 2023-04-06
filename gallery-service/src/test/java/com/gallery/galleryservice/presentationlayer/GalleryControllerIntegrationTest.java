@@ -50,6 +50,7 @@ class GalleryControllerIntegrationTest {
     }
 
     // ADD
+    
     // UPDATE
 
     @Sql({"/data-mysql.sql"})

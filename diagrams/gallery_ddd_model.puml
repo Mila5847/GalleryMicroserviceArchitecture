@@ -47,7 +47,7 @@ rectangle "Works of art and creators subdomain" {
         note "A painting cannot have more than one painter" as paintingInvariant
     }
 
-    rectangle "  "{
+    rectangle " "{
          ENTITY(Painter) {
                 -name: String
                 -origin: String
@@ -63,12 +63,17 @@ rectangle "Works of art and creators subdomain" {
          Painter "1" --o "1" Painting
     }
 
-       rectangle "  "{
+       rectangle "   "{
              ENTITY(Sculpture) {
                    -title: String
                    -material: String
                    -texture: String
              }
+
+              VALUE_OBJECT(SculptureIdentifier) {
+                -sculptureId: UUID
+              }
+             Sculpture --> SculptureIdentifier
              Sculpture "*" --o "1" Gallery
 
        }

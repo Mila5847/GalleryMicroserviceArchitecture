@@ -15,7 +15,7 @@ Person(employee, "Administrator", "An administrator of the gallery")
 System_Boundary(gallery_system, "Gallery System") {
 Container(web_app, "Wep Application", "JavaScript", "Delivers the static content and the Internet gallery single page application")
 Container(spa, "Single-Page Application", "JavaScript/React", "Provides all the Internet gallery's functionality to the administrator via their web browser.")
-Container(api_gateway, "API Gateway", "Java", "Provides Internet gallery functionality via a JSON/HTTPS API. Handles incoming requests and forwards them to the appropriate microservice", $sprite="java")
+Container(api_gateway, "API Gateway", "Java", "Provides Internet gallery functionality via a JSON/HTTPS API. Manage requests and forwards them to a microservice", $sprite="java")
 Container(gallery_service, "Gallery Service", "Java", "Provides information about art galleries", $sprite="java")
 Container(painting_service, "Painting Service", "Java", "Provides information about paintings", $sprite="java")
 Container(exhibition_service, "Exhibition Service", "Java", "Aggregates information about exhibitions, galleries, sculptures, and paintings", $sprite="java")

@@ -20,24 +20,6 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ExistingGalleryNotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handleExistingGalleryNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ExistingExhibitionNotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handleExistingExhibitionNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
-    }
-
-    @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler(NameMissingFromQueryParamsException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handleExistingExhibitionByNameNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(BAD_REQUEST, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(ExistingPaintingNotFoundException.class) //when this exception happen, this function would be called
     public HttpErrorInfo handlePaintingExhibitionNotFoundException(WebRequest request, Exception ex) {
         return createHttpErrorInfo(NOT_FOUND, request, ex);

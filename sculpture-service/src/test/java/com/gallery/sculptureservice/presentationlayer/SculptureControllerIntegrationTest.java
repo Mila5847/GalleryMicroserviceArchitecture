@@ -39,20 +39,17 @@ public class SculptureControllerIntegrationTest {
 
     @Autowired
     WebTestClient webTestClient;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
     @Autowired
     SculptureRepository sculptureRepository;
 
 
     private Sculpture preSavedSculpture;
 
-    @AfterEach
+   /* @AfterEach
     public void tearDown(){
         sculptureRepository.deleteAll();
         preSavedSculpture = sculptureRepository.save(new Sculpture("The Beginning", "Clay", "Smooth"));
-    }
+    }*/
 
     // GET ALL
     @Test
@@ -117,7 +114,7 @@ public class SculptureControllerIntegrationTest {
                 .bodyValue(sculptureRequestModel)
                 .exchange().expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(SculptureRequestModel.class)
+                .expectBody(SculptureResponseModel.class)
                 .value((dto) ->{
                     assertNotNull(dto);
                     assertEquals(dto.getGalleryId(), VALID_GALLERY_ID);
@@ -129,7 +126,7 @@ public class SculptureControllerIntegrationTest {
     // UPDATE
     @Test
     public void WhenUpdateSculptureInGalleryWithValidGalleryIAndValidSculptureId_ThenReturnUpdatedSculpture() {
-        String expectedTitle = "The Titanic Ship";
+        String expectedTitle = "Vase";
         String expectedMaterial = "Marble";
         String expectedTexture = "Smooth";
 
@@ -150,7 +147,6 @@ public class SculptureControllerIntegrationTest {
                 .jsonPath("$.material").isEqualTo(expectedMaterial)
                 .jsonPath("$.texture").isEqualTo(expectedTexture);
     }
-
 
     // DELETE
     @Test
@@ -190,7 +186,7 @@ public class SculptureControllerIntegrationTest {
 
     // EXCEPTION: UPDATE SCULPTURE WITH INVALID ID
     @Test
-    public void WhenUpdateSculptureInGalleryWithValidGalleryIButInvalidSculptureId_ThenReturnUnprocessableEntity() {
+    public void WhenUpdateSculptureInGalleryWithValidGalleryIButInvalidSculptureId_ThenReturnNotFound() {
         String expectedTitle = "The Titanic Ship";
         String expectedMaterial = "Marble";
         String expectedTexture = "Smooth";
@@ -212,7 +208,7 @@ public class SculptureControllerIntegrationTest {
 
     // EXCEPTION: DELETE SCULPTURE WITH INVALID ID
     @Test
-    public void WhenDeleteSculptureInGalleryWithValidGalleryIButInvalidSculptureId_ThenReturnUnprocessableEntity() {
+    public void WhenDeleteSculptureInGalleryWithValidGalleryIButInvalidSculptureId_ThenReturnNotFound() {
         String expectedTitle = "The Titanic Ship";
         String expectedMaterial = "Marble";
         String expectedTexture = "Smooth";
@@ -229,7 +225,6 @@ public class SculptureControllerIntegrationTest {
                 .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/sculptures/" + invalidSculptureId)
                 .jsonPath("$.message").isEqualTo("Sculpture with id: " + invalidSculptureId + " does not exist.");
     }
-
 
     // Request
     private SculptureRequestModel createNewSculptureRequestModel(String galleryId, String title, String material, String texture) {

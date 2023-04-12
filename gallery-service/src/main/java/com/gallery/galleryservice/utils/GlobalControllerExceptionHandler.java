@@ -14,20 +14,8 @@ import static org.springframework.http.HttpStatus.*;
 @RestControllerAdvice
 public class GlobalControllerExceptionHandler {
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handleNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(ExistingGalleryNotFoundException.class) //when this exception happen, this function would be called
     public HttpErrorInfo handleExistingGalleryNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ExistingExhibitionNotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handleExistingExhibitionNotFoundException(WebRequest request, Exception ex) {
         return createHttpErrorInfo(NOT_FOUND, request, ex);
     }
 
@@ -35,18 +23,6 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(NameMissingFromQueryParamsException.class) //when this exception happen, this function would be called
     public HttpErrorInfo handleExistingExhibitionByNameNotFoundException(WebRequest request, Exception ex) {
         return createHttpErrorInfo(BAD_REQUEST, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ExistingPaintingNotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handlePaintingExhibitionNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ExistingPainterNotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handlePainterExhibitionNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
     }
 
     @ResponseStatus(UNPROCESSABLE_ENTITY) //422 error status

@@ -10,7 +10,7 @@ import lombok.Value;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PaintingRequestModel {
     private String title;
-    private int year;
+    private int yearCreated;
     private String painterId;
     private String galleryId;
 }

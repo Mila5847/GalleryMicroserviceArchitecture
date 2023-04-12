@@ -14,7 +14,7 @@ public interface GalleryService {
     GalleryResponseModel addGallery(GalleryRequestModel galleryRequestModel);
     GalleryResponseModel updateGallery(GalleryRequestModel galleryRequestModel, String galleryId);
 
-    void removeAllGalleries();
+    //void removeAllGalleries();
     void removeGalleryById(String galleryId);
 
 }

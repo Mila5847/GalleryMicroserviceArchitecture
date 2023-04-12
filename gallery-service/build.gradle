@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.0.2'
 	id 'io.spring.dependency-management' version '1.1.0'
 	id 'io.freefair.lombok' version '6.6.1'
+	id 'jacoco'
 }
 
 group = 'com.gallery.galleryservice'
@@ -37,6 +38,36 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-hateoas' // added for HATEOAS from spring initializer
 }
 
-tasks.named('test') {
+jacoco {
+	toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+	dependsOn test
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+			])
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.00
+			}
+		}
+	}
+}
+
+test.finalizedBy jacocoTestReport
+check.dependsOn jacocoTestCoverageVerification
+
+test {
 	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
 }

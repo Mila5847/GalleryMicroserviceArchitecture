@@ -8,7 +8,6 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PainterRequestModel {
-    private String painterId;
     private String name;
     private String origin;
     private String birthDate;

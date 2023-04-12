@@ -86,19 +86,15 @@ public class GalleryServiceImpl implements GalleryService{
         Address address = new Address(galleryRequestModel.getStreetAddress(), galleryRequestModel.getCity(),
                 galleryRequestModel.getProvince(), galleryRequestModel.getCountry(), galleryRequestModel.getPostalCode());
         gallery.setAddress(address);
-        try{
-            Gallery galleryToBeUpdated = galleryRepository.save(gallery);
-            GalleryResponseModel galleryResponse = galleryResponseMapper.entityToResponseModel(galleryToBeUpdated);
-            return galleryResponse;
-        }catch(DataAccessException ex){
-            throw new InvalidInputException("Could not update gallery.");
-        }
+        Gallery galleryToBeUpdated = galleryRepository.save(gallery);
+        GalleryResponseModel galleryResponse = galleryResponseMapper.entityToResponseModel(galleryToBeUpdated);
+        return galleryResponse;
     }
 
-    @Override
+    /*@Override
     public void removeAllGalleries() {
         galleryRepository.deleteAll();
-    }
+    }*/
 
     @Override
     public void removeGalleryById(String galleryId) {

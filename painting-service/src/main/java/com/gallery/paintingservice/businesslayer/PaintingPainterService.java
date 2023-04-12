@@ -12,7 +12,7 @@ public interface PaintingPainterService {
     PaintingPainterResponseModel addPaintingToGallery(String galleryId, PaintingRequestModel paintingRequestModel);
     PaintingPainterResponseModel updatePaintingInGallery(String galleryId, String paintingId, PaintingRequestModel paintingRequestModel);
     void removePaintingByIdInGallery(String galleryId, String paintingId);
-    void removeAllPaintingsInGallery(String galleryId);
+    //void removeAllPaintingsInGallery(String galleryId);
     PaintingPainterResponseModel addPainterToPaintingInGallery(String galleryId, String paintingId, PainterRequestModel painterResponseModel);
     PaintingPainterResponseModel updatePainterOfPaintingInGallery(String galleryId, String paintingId, String painterId, PainterRequestModel painterRequestModel);
     void removePainterOfPaintingInGallery(String galleryId, String paintingId, String painterId);

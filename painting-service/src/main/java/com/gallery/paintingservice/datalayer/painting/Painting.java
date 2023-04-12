@@ -16,7 +16,7 @@ public class Painting {
     private PaintingIdentifier paintingIdentifier;
     private String title;
 
-    private Integer yearCreated;
+    private int yearCreated;
 
     @Embedded
     private GalleryIdentifier galleryIdentifier;

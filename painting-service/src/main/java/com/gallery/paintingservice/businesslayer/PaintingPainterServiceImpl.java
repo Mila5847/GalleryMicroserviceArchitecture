@@ -67,11 +67,11 @@ public class PaintingPainterServiceImpl implements PaintingPainterService {
         /*if (!galleryRepository.existsByGalleryIdentifier_GalleryId(galleryId)) {
             throw new ExistingGalleryNotFoundException("Gallery with id: " + galleryId + " does not exist.");
         }*/
-        List<Painting> paintings = paintingRepository.findAllByGalleryIdentifier_GalleryIdAndPainterIdentifier_PainterId(galleryId, painterId);
         Painter painter = painterRepository.findByPainterIdentifier_PainterId(painterId);
         if(painter == null){
             throw new ExistingPainterNotFoundException("Painter with id " + painterId + " does not exist.");
         }
+        List<Painting> paintings = paintingRepository.findAllByGalleryIdentifier_GalleryIdAndPainterIdentifier_PainterId(galleryId, painterId);
         return paintingsOfPainterResponseMapper.entitiesToResponseModel(painter, painterResponseMapper.entityToResponseModel(painter), paintingResponseMapper.entityListToResponseModelList(paintings));
     }
 
@@ -134,11 +134,11 @@ public class PaintingPainterServiceImpl implements PaintingPainterService {
         }
     }
 
-    @Override
+    /*@Override
     public void removeAllPaintingsInGallery(String galleryId) {
         painterRepository.deleteAll();
         paintingRepository.deleteAll();
-    }
+    }*/
 
     @Override
     public PaintingPainterResponseModel addPainterToPaintingInGallery(String galleryId, String paintingId, PainterRequestModel painterRequestModel) {

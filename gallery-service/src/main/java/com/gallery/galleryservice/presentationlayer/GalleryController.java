@@ -1,6 +1,8 @@
 package com.gallery.galleryservice.presentationlayer;
 
 import com.gallery.galleryservice.businesslayer.GalleryService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,22 +33,23 @@ public class GalleryController {
     }
 
     @PostMapping
-    public GalleryResponseModel addGallery(@RequestBody GalleryRequestModel galleryRequestModel){
-        return galleryService.addGallery(galleryRequestModel);
+    public ResponseEntity<GalleryResponseModel> addGallery(@RequestBody GalleryRequestModel galleryRequestModel){
+        return ResponseEntity.status(HttpStatus.CREATED).body(galleryService.addGallery(galleryRequestModel));
     }
 
     @PutMapping("/{galleryId}")
-    public GalleryResponseModel updateGallery(@RequestBody GalleryRequestModel galleryRequestModel, @PathVariable String galleryId){
-        return galleryService.updateGallery(galleryRequestModel, galleryId);
+    public ResponseEntity<GalleryResponseModel> updateGallery(@RequestBody GalleryRequestModel galleryRequestModel, @PathVariable String galleryId){
+        return ResponseEntity.status(HttpStatus.OK).body(galleryService.updateGallery(galleryRequestModel, galleryId));
     }
 
     @DeleteMapping("{galleryId}")
-    public void removeGalleryById(@PathVariable String galleryId){
+    public ResponseEntity<Void> removeGalleryById(@PathVariable String galleryId){
         galleryService.removeGalleryById(galleryId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping
+   /* @DeleteMapping
     public void removeAllGalleries(){
         galleryService.removeAllGalleries();
-    }
+    }*/
 }

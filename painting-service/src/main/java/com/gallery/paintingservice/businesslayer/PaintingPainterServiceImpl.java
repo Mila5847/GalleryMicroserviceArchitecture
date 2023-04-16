@@ -87,6 +87,9 @@ public class PaintingPainterServiceImpl implements PaintingPainterService {
         Painter painter = painterRepository.findByPainterIdentifier_PainterId(painterIdentifier.getPainterId());
         /*ExhibitionIdentifier exhibitionIdentifier = new ExhibitionIdentifier();
         exhibitionIdentifier.setExhibitionId("");*/
+        if(paintingRepository.findByGalleryIdentifier_GalleryIdAndTitle(galleryId, paintingRequestModel.getTitle()) != null){
+            throw new PaintingAlreadyExistsInGallery("Painting with title: " + paintingRequestModel.getTitle() + " already exists.");
+        }
         Painting painting = paintingRequestMapper.requestModelToEntity(paintingRequestModel,painterIdentifier, galleryIdentifier);
         if(painting.getTitle().length() < 1) {
             throw new MinimumTitleLengthForPaintingNameException("The tile of the painting should be at least 1 character.");
@@ -185,9 +188,6 @@ public class PaintingPainterServiceImpl implements PaintingPainterService {
 
     @Override
     public void removePainterOfPaintingInGallery(String galleryId, String paintingId, String painterId) {
-        /*if (!galleryRepository.existsByGalleryIdentifier_GalleryId(galleryId)) {
-            throw new ExistingGalleryNotFoundException("Gallery with id: " + galleryId + " does not exist.");
-        }*/
         Painting existingPainting = paintingRepository.findByPaintingIdentifier_PaintingId(paintingId);
         if(existingPainting == null){
             throw new ExistingPaintingNotFoundException("Painting with id: " + paintingId + " does not exist.");
@@ -196,11 +196,10 @@ public class PaintingPainterServiceImpl implements PaintingPainterService {
         if(painter == null) {
             throw new ExistingPainterNotFoundException("Painter with id " + painterId + " does not exist.");
         }
-        PainterIdentifier painterIdentifier = new PainterIdentifier();
-        painterIdentifier.setPainterId("");
-        existingPainting.setPainterIdentifier(painterIdentifier);
+        existingPainting.setPainterIdentifier(null);
         paintingRepository.save(existingPainting);
     }
+
 
     /*@Override
     public List<PaintingResponseModel> getPaintingsOfExhibitionInGallery(String galleryId, String exhibitionId) {

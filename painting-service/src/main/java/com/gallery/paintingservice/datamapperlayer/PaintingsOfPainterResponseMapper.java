@@ -26,7 +26,7 @@ public interface PaintingsOfPainterResponseMapper {
     @Mapping(expression = "java(painterResponseModel)", target = "painterResponseModel")
     PaintingsOfPainterResponseModel entitiesToResponseModel(Painter painter, PainterResponseModel painterResponseModel, List<PaintingResponseModel> paintings);
 
-    @AfterMapping
+    /*@AfterMapping
     default void addLinks(@MappingTarget PaintingsOfPainterResponseModel model, Painting painting){
         // self link
         Link selfLink = linkTo(methodOn(PaintingController.class)
@@ -38,5 +38,5 @@ public interface PaintingsOfPainterResponseMapper {
                 .getPaintingsByPainterIdInGallery(painting.getGalleryIdentifier().getGalleryId(), model.getPainterId()))
                 .withRel("paintings");
         model.add(paintingsLink);
-    }
+    }*/
 }

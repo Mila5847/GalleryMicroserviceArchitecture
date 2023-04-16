@@ -13,6 +13,4 @@ import java.util.List;
 public interface PainterResponseMapper {
     @Mapping(expression = "java(painter.getPainterIdentifier().getPainterId())", target = "painterId")
     PainterResponseModel entityToResponseModel(Painter painter);
-
-    List<PainterResponseModel> entityListToResponseModelList(List<Painter> painters);
 }

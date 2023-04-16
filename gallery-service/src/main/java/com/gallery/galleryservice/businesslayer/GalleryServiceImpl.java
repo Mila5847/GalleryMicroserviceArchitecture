@@ -9,9 +9,7 @@ import com.gallery.galleryservice.presentationlayer.GalleryRequestModel;
 import com.gallery.galleryservice.presentationlayer.GalleryResponseModel;
 import com.gallery.galleryservice.utils.exceptions.DuplicateGalleryAddressException;
 import com.gallery.galleryservice.utils.exceptions.ExistingGalleryNotFoundException;
-import com.gallery.galleryservice.utils.exceptions.InvalidInputException;
 import com.gallery.galleryservice.utils.exceptions.NameMissingFromQueryParamsException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,7 +48,7 @@ public class GalleryServiceImpl implements GalleryService{
     @Override
     public GalleryResponseModel getGalleryByName(Map<String, String> queryParams) {
         String galleryName = queryParams.get("name");
-        if(galleryName == null) {
+        if(galleryName == "") {
             throw new NameMissingFromQueryParamsException("Name param missing from query param");
         }
         Gallery gallery = galleryRepository.findByName(galleryName);

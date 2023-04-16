@@ -25,12 +25,6 @@ public class GlobalControllerExceptionHandler {
         return createHttpErrorInfo(BAD_REQUEST, request, ex);
     }
 
-    @ResponseStatus(UNPROCESSABLE_ENTITY) //422 error status
-    @ExceptionHandler(InvalidInputException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handleInvalidInputException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);
-    }
-
     @ResponseStatus(UNPROCESSABLE_ENTITY)
     @ExceptionHandler(DuplicateGalleryAddressException.class)
     public HttpErrorInfo handleDuplicateGalleryAddressException(WebRequest request, Exception ex) {

@@ -15,4 +15,5 @@ public interface PaintingRepository extends JpaRepository<Painting, Integer> {
     //Painting findByGalleryIdentifier_GalleryIdAndExhibitionIdentifier_ExhibitionIdAndTitle(String galleryId, String exhibitionId, String title);
 
     Painting findByGalleryIdentifier_GalleryIdAndTitle(String galleryId, String paintingTitle);
+    //Painting findByGalleryIdentifier_GalleryIdAndPaintingIdentifier_PaintingIdAndPainterIdentifier_PainterId(String galleryId, String paintingId, String painterId);
 }

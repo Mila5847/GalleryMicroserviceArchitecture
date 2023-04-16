@@ -1,11 +1,10 @@
 package com.gallery.galleryservice.utils.exceptions;
 
 public class ExistingGalleryNotFoundException extends RuntimeException{
-    public ExistingGalleryNotFoundException() {}
-
+    //public ExistingGalleryNotFoundException() {}
     public ExistingGalleryNotFoundException(String message) { super(message); }
 
-    public ExistingGalleryNotFoundException(Throwable cause) { super(cause); }
+    //public ExistingGalleryNotFoundException(Throwable cause) { super(cause); }
 
-    public ExistingGalleryNotFoundException(String message, Throwable cause) { super(message, cause); }
+    //public ExistingGalleryNotFoundException(String message, Throwable cause) { super(message, cause); }
 }

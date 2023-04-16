@@ -1,5 +1,6 @@
 package com.gallery.paintingservice.presentationlayer;
 
+import com.gallery.paintingservice.datalayer.painter.Painter;
 import com.gallery.paintingservice.datalayer.painter.PainterRepository;
 import com.gallery.paintingservice.datalayer.painting.Painting;
 import com.gallery.paintingservice.datalayer.painting.PaintingRepository;
@@ -13,6 +14,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -25,7 +28,6 @@ public class PaintingControllerIntegrationTest {
     private final String VALID_PAINTING_ID = "3ed9654a-b773-4aa0-ae6b-b22afb636c8e";
     private final String VALID_PAINTING_TITLE = "The Starry Night";
     private final Integer VALID_PAINTING_YEAR = 1889;
-
     private final String VALID_PAINTING_WITHOUT_PAINTER = "f32e5cb2-1890-4572-812b-fdc671537b45";
     private final String VALID_PAINTER_ID = "f4c80444-5acf-4d57-8902-9f55255e9e55";
 
@@ -33,8 +35,8 @@ public class PaintingControllerIntegrationTest {
     WebTestClient webTestClient;
     @Autowired
     PaintingRepository paintingRepository;
-    /*@Autowired
-    PainterRepository painterRepository;*/
+    @Autowired
+    PainterRepository painterRepository;
 
     /*@AfterEach
     public void tearDown(){
@@ -185,6 +187,26 @@ public class PaintingControllerIntegrationTest {
                 .jsonPath("$.message").isEqualTo("The tile of the painting should be at least 1 character.");
     }
 
+    // ADD EXCEPTION TITLE MUST CONTAIN AT LEAST 1 CHARACTER
+    @Test
+    public void WhenAddPaintingWithAlreadyExistingTitleToGallery_ThenReturnUnprocessableEntity() {
+        String title = "The Starry Night";
+        int yearCreated = 1999;
+
+        PaintingRequestModel paintingRequestModel = createNewPaintingRequestModel(title, yearCreated);
+
+        webTestClient.post()
+                .uri(BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/paintings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(paintingRequestModel)
+                .exchange().expectStatus().isEqualTo(HttpStatusCode.valueOf(422))
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/paintings")
+                .jsonPath("$.message").isEqualTo("Painting with title: " + title + " already exists.");
+    }
+
 
     // UPDATE
     @Test
@@ -232,9 +254,6 @@ public class PaintingControllerIntegrationTest {
     // DELETE PAINTING
     @Test
     public void whenPaintingIsDeleted_thenPaintingIsRemovedFromGallery() {
-        // arrange
-        Painting paintingToDelete = paintingRepository.findByGalleryIdentifier_GalleryIdAndPaintingIdentifier_PaintingId(VALID_GALLERY_ID, VALID_PAINTING_ID);
-
         // act
         webTestClient.delete()
                 .uri(BASE_URI_GALLERIES+"/"+VALID_GALLERY_ID+"/paintings/"+VALID_PAINTING_ID)
@@ -243,8 +262,27 @@ public class PaintingControllerIntegrationTest {
                 .expectStatus().isNoContent();
 
         // assert
-        assertTrue(paintingRepository.findByGalleryIdentifier_GalleryIdAndPaintingIdentifier_PaintingId(VALID_GALLERY_ID, VALID_PAINTING_ID) == null);
+        assertNull(paintingRepository.findByGalleryIdentifier_GalleryIdAndPaintingIdentifier_PaintingId(VALID_GALLERY_ID, VALID_PAINTING_ID));
     }
+
+    // WHEN DELETE PAINTING, IF PAINTER DOES NOT HAVE ANY MORE PAINTINGS, DELETE PAINTER
+    @Test
+    public void whenPaintingIsDeleted_thenPaintingIsRemovedFromGalleryAndPainterIsDeleted() {
+        // arrange
+        String paintingIdWithPainterWhoOnlyHasThisPainting = "6ae9eaf7-5ec4-45da-a85d-45a317e711a2";
+        String idOfPainterWithOnlyOnePainting = "0e1482bb-67a8-4620-842b-3f7bfb7ee175";
+        // act
+        webTestClient.delete()
+                .uri(BASE_URI_GALLERIES+"/"+VALID_GALLERY_ID+"/paintings/"+paintingIdWithPainterWhoOnlyHasThisPainting)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        // assert
+        assertNull(paintingRepository.findByGalleryIdentifier_GalleryIdAndPaintingIdentifier_PaintingId(VALID_GALLERY_ID, paintingIdWithPainterWhoOnlyHasThisPainting));
+        assertFalse(painterRepository.existsByPainterIdentifier_PainterId(idOfPainterWithOnlyOnePainting));
+    }
+
 
     // DELETE PAINTING WITH INVALID ID
     @Test
@@ -339,6 +377,103 @@ public class PaintingControllerIntegrationTest {
                     assertEquals(dto.painterResponseModel.birthDate, birthDate);
                     assertEquals(dto.painterResponseModel.deathDate, deathDate);
                 });
+    }
+
+    // EXCEPTION UPDATE PAINTER OF PAINTING WITH INVALID PAINTING ID
+    @Test
+    public void WhenUpdatePainterOfNonExistentPaintingInGallery_ThenReturnNotFound() {
+        String invalidPaintingId = VALID_PAINTING_WITHOUT_PAINTER+1;
+        String name = "John Smith";
+        String origin = "Canada";
+        String birthDate = "19/08/1990";
+        String deathDate = "Unknown";
+
+        PainterRequestModel painterRequestModel = createNewPainterRequestModel(name, origin, birthDate, deathDate);
+
+        webTestClient.put()
+                .uri(BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/paintings/" + invalidPaintingId + "/painters/" + VALID_PAINTER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(painterRequestModel)
+                .exchange().expectStatus().isEqualTo(HttpStatusCode.valueOf(404))
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/paintings/" + invalidPaintingId + "/painters/" + VALID_PAINTER_ID)
+                .jsonPath("$.message").isEqualTo("Painting with id: " + invalidPaintingId + " does not exist.");
+    }
+
+    // EXCEPTION UPDATE PAINTER OF PAINTING WITH INVALID PAINTer ID
+    @Test
+    public void WhenUpdatePainterWithInvalidPainterIdInGallery_ThenReturnNotFound() {
+        String invalidPainterId = VALID_PAINTER_ID+1;
+        String name = "John Smith";
+        String origin = "Canada";
+        String birthDate = "19/08/1990";
+        String deathDate = "Unknown";
+
+        PainterRequestModel painterRequestModel = createNewPainterRequestModel(name, origin, birthDate, deathDate);
+
+        webTestClient.put()
+                .uri(BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/paintings/" + VALID_PAINTING_ID + "/painters/" + invalidPainterId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(painterRequestModel)
+                .exchange().expectStatus().isEqualTo(HttpStatusCode.valueOf(404))
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/paintings/" + VALID_PAINTING_ID + "/painters/" + invalidPainterId)
+                .jsonPath("$.message").isEqualTo("Painter with id " + invalidPainterId + " does not exist.");
+    }
+
+    // REMOVE PAINTER OF PAINTING
+    @Test
+    public void whenDeletingExistingPainterOfPainting_thenDeletePainterFromPainting() {
+        // arrange
+        Painter painter = painterRepository.findByPainterIdentifier_PainterId(VALID_PAINTER_ID);
+        Painting painting = paintingRepository.findByGalleryIdentifier_GalleryIdAndPaintingIdentifier_PaintingId(VALID_GALLERY_ID,  VALID_PAINTING_ID);
+        // act
+        webTestClient.delete()
+                .uri(BASE_URI_GALLERIES + "/" + VALID_GALLERY_ID + "/paintings/" + VALID_PAINTING_ID + "/painters/" + VALID_PAINTER_ID)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNoContent();
+        // assert
+        Painting updatedPainting = paintingRepository.findByGalleryIdentifier_GalleryIdAndPaintingIdentifier_PaintingId(VALID_GALLERY_ID,  VALID_PAINTING_ID);
+        assertEquals(updatedPainting.getPainterIdentifier(), null);
+    }
+
+    // EXCEPTION: REMOVE PAINTER WITH INVALID ID OF PAINTING
+    @Test
+    public void whenPainterWithInvalidIdIsDeleted_thenReturnNotFound() {
+        // arrange
+        String invalidPainterId = VALID_PAINTER_ID+1;
+
+        // act
+        webTestClient.delete()
+                .uri(BASE_URI_GALLERIES+"/"+VALID_GALLERY_ID+"/paintings/"+ VALID_PAINTING_ID + "/painters/" + invalidPainterId)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isEqualTo(HttpStatusCode.valueOf(404))
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES+"/"+VALID_GALLERY_ID+"/paintings/"+ VALID_PAINTING_ID + "/painters/" + invalidPainterId)
+                .jsonPath("$.message").isEqualTo("Painter with id " + invalidPainterId + " does not exist.");
+    }
+
+    // EXCEPTION: REMOVE PAINTER OF PAINTING WITH INVALID PAINTING ID
+    @Test
+    public void whenPainterOfNonExistentPaintingIsDeleted_thenReturnNotFound() {
+        // arrange
+        String invalidPaintingId = VALID_PAINTING_ID+1;
+
+        // act
+        webTestClient.delete()
+                .uri(BASE_URI_GALLERIES+"/"+VALID_GALLERY_ID+"/paintings/"+ invalidPaintingId + "/painters/" + VALID_PAINTER_ID)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isEqualTo(HttpStatusCode.valueOf(404))
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES+"/"+VALID_GALLERY_ID+"/paintings/"+ invalidPaintingId + "/painters/" + VALID_PAINTER_ID)
+                .jsonPath("$.message").isEqualTo("Painting with id: " + invalidPaintingId + " does not exist.");
     }
 
 

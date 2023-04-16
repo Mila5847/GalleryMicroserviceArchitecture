@@ -17,7 +17,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public interface PaintingPainterResponseMapper {
     PaintingPainterResponseModel entityToResponseModel(PaintingResponseModel paintingResponseModel, PainterResponseModel painterResponseModel);
 
-    @AfterMapping
+    /*@AfterMapping
     default void addLinks(@MappingTarget PaintingPainterResponseModel model, Painting painting){
         // self link
         Link selfLink = linkTo(methodOn(PaintingController.class)
@@ -30,5 +30,5 @@ public interface PaintingPainterResponseMapper {
                 .getPaintingsByPainterIdInGallery(model.getPaintingResponseModel().getGalleryId(), model.getPaintingResponseModel().getPainterId()))
                 .withRel("paintings");
         model.add(paintingsLink);
-    }
+    }*/
 }

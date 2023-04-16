@@ -87,7 +87,7 @@ class GalleryControllerIntegrationTest {
     }
 
     // GET GALLERY BY NAME
-    /*@Test
+    @Test
     public void WhenGetGalleryByNameWithValidName_ThenReturnStatusOk(){
         // arrange
         String galleryName = "Art Gallery of Ontario";
@@ -115,21 +115,37 @@ class GalleryControllerIntegrationTest {
     @Test
     public void WhenGetGalleryByNameWithInvalidName_ThenReturnStatusNotFound() {
         // arrange
-        String galleryName = "Invalid Gallery Name";
-        String encodedGalleryName = URLEncoder.encode(galleryName, StandardCharsets.UTF_8);
+        String galleryName = "Art Galleryy of Ontario";
 
         // act
         webTestClient.get()
-                .uri(BASE_URI_GALLERIES + "/gallery?name=" + encodedGalleryName)
+                .uri(BASE_URI_GALLERIES + "/gallery?name=" + galleryName)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange().expectStatus().isEqualTo(HttpStatusCode.valueOf(404))
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
-                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES + "/gallery?name=" + encodedGalleryName)
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES + "/gallery")
                 .jsonPath("$.message").isEqualTo("Gallery with name " + galleryName + " does not exist.");
-    }*/
+    }
 
-        // ADD
+    // EXCEPTION: MISSING NAME WHEN GET BY NAME
+    @Test
+    public void WhenGetGalleryByNameWithMissingName_ThenReturnStatusBadRequest() {
+        // arrange
+        String galleryName = "";
+
+        // act
+        webTestClient.get()
+                .uri(BASE_URI_GALLERIES + "/gallery?name=" + galleryName)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isEqualTo(HttpStatusCode.valueOf(400))
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_GALLERIES + "/gallery")
+                .jsonPath("$.message").isEqualTo("Name param missing from query param");
+    }
+
+    // ADD
     @Test
     public void WhenAddGalleryWithValidGalleryId_ThenReturnNewGallery(){
         String name = "Art Museum of France";

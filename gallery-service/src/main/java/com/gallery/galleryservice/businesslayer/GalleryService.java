@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface GalleryService {
     List<GalleryResponseModel> getGalleries();
-    GalleryResponseModel getGalleryById(String galleryID);
+    GalleryResponseModel getGalleryById(String galleryId);
 
     GalleryResponseModel getGalleryByName(Map<String, String> queryParams);
     GalleryResponseModel addGallery(GalleryRequestModel galleryRequestModel);

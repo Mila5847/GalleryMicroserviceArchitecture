@@ -1,4 +1,15 @@
 services:
+  api-gateway:
+    build: api-gateway
+    hostname: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - gallery-service
+      - painting-service
+      - sculpture-service
   gallery-service:
     # to find the Dockerfile
     build: gallery-service

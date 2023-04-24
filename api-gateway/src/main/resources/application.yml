@@ -1,0 +1,40 @@
+# Default Spring Profile
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+app:
+  gallery-service:
+    host: localhost
+    port: 7001
+  painting-service:
+    host: localhost
+    port: 7002
+  sculpture-service:
+    host: localhost
+    port: 7003
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+server:
+  port: 8080
+
+app:
+  gallery-service:
+    host: gallery-service
+    port: 8080
+  painting-service:
+    host: painting-service
+    port: 8080
+  sculpture-service:
+    host: sculpture-service
+    port: 8080

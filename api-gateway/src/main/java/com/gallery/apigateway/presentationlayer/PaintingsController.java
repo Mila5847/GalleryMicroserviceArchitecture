@@ -70,6 +70,18 @@ public class PaintingsController {
         paintingsService.updatePaintingInGallery(galleryId, paintingId, paintingRequestModel);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @PutMapping(
+            value = "/{galleryId}/paintings/{paintingId}/painters/{painterId}",
+            produces = "application/json",
+            consumes = "application/json"
+    )
+    ResponseEntity<Void> updatePainterOfPaintingInGallery(@PathVariable String galleryId, @PathVariable String paintingId, @PathVariable String painterId, @RequestBody PainterRequestModel painterRequestModel){
+        log.debug("1. Received in api-gateway paintings controller updatePaintingInGallery with gallery id " + galleryId + " and painting id " + paintingId + " painter id " + painterId);
+        paintingsService.updatePainterOfPaintingInGallery(galleryId, paintingId, painterId, painterRequestModel);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @DeleteMapping(
             value = "/{galleryId}/paintings/{paintingId}",
             produces = "application/json"
@@ -77,6 +89,16 @@ public class PaintingsController {
     ResponseEntity<Void> removePaintingByIdInGallery(@PathVariable String galleryId, @PathVariable String paintingId){
         log.debug("1. Received in api-gateway paintings controller deletePainting with galleryId :" + galleryId + "and painting id: " + paintingId);
         paintingsService.removePaintingByIdInGallery(galleryId, paintingId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping(
+            value = "/{galleryId}/paintings/{paintingId}/painters/{painterId}",
+            produces = "application/json"
+    )
+    ResponseEntity<Void> removePainterFromPaintingInGallery(@PathVariable String galleryId, @PathVariable String paintingId, @PathVariable String painterId){
+        log.debug("1. Received in api-gateway paintings controller deletePainting with galleryId :" + galleryId + " and painting id: " + paintingId + " painter id " + painterId);
+        paintingsService.removePainterOfPaintingInGallery(galleryId, paintingId, painterId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

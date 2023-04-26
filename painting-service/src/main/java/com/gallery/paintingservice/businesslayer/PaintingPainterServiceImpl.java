@@ -196,7 +196,9 @@ public class PaintingPainterServiceImpl implements PaintingPainterService {
         if(painter == null) {
             throw new ExistingPainterNotFoundException("Painter with id " + painterId + " does not exist.");
         }
-        existingPainting.setPainterIdentifier(null);
+        PainterIdentifier painterIdentifier = existingPainting.getPainterIdentifier();
+        painterIdentifier.setPainterId("");
+        existingPainting.setPainterIdentifier(painterIdentifier);
         paintingRepository.save(existingPainting);
     }
 

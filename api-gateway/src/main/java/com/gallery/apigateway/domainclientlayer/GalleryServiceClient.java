@@ -96,7 +96,7 @@ public class GalleryServiceClient {
             restTemplate.delete(url);
             log.debug("5. Received in API-Gateway Gallery Service Client deleteGallery with galleryId : " + galleryId);
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in API-Gateway Gallery Service Client deleteGallery with galleryId.");
+            log.debug("5. Exception caught in API-Gateway Gallery Service Client deleteGallery");
             throw handleHttpClientException(ex);
         }
     }

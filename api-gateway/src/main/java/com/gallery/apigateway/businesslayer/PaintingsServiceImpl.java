@@ -46,8 +46,18 @@ public class PaintingsServiceImpl implements PaintingsService{
     }
 
     @Override
+    public void updatePainterOfPaintingInGallery(String galleryId, String paintingId, String painterId, PainterRequestModel painterRequestModel) {
+        paintingServiceClient.updatePainTerOfPaintingInGallery(galleryId, paintingId, painterId, painterRequestModel);
+    }
+
+    @Override
     public void removePaintingByIdInGallery(String galleryId, String paintingId) {
         paintingServiceClient.removePaintingByIdInGallery(galleryId, paintingId);
+    }
+
+    @Override
+    public void removePainterOfPaintingInGallery(String galleryId, String paintingId, String painterId) {
+        paintingServiceClient.removePainterOfPaintingInGallery(galleryId, paintingId, painterId);
     }
 
 

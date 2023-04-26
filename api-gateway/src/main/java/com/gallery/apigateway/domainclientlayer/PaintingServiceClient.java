@@ -114,6 +114,17 @@ public class PaintingServiceClient {
         }
     }
 
+    public void updatePainTerOfPaintingInGallery(String galleryId, String paintingId, String painterId, PainterRequestModel painterRequestModel){
+        try {
+            String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings/" + paintingId + "/painters/" + painterId;
+            restTemplate.put(url, painterRequestModel);
+            log.debug("5. Received in API-Gateway Paintings Service Client updatePainTerOfPaintingInGallery");
+        } catch (HttpClientErrorException ex) {
+            log.debug("5. Exception caught in API-Gateway Paintings Service Client updatePainTerOfPaintingInGallery");
+            throw handleHttpClientException(ex);
+        }
+    }
+
     public void removePaintingByIdInGallery(String galleryId, String paintingId) {
         try {
             String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings/" + paintingId;
@@ -121,6 +132,17 @@ public class PaintingServiceClient {
             log.debug("5. Received in API-Gateway Painting Service Client deletePaintingByIdInGallery with galleryId : " + galleryId + " and painting id " + paintingId);
         } catch (HttpClientErrorException ex) {
             log.debug("5. Exception caught in API-Gateway Painting Service Client deletePaintingByIdInGallery");
+            throw handleHttpClientException(ex);
+        }
+    }
+
+    public void removePainterOfPaintingInGallery(String galleryId, String paintingId, String painterId) {
+        try {
+            String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings/" + paintingId + "/painters/" + painterId;
+            restTemplate.delete(url);
+            log.debug("5. Received in API-Gateway Painting Service Client removePainterOfPaintingInGallery with galleryId : " + galleryId + " and painting id " + paintingId + "painter id " + painterId);
+        } catch (HttpClientErrorException ex) {
+            log.debug("5. Exception caught in API-Gateway Painting Service Client removePainterOfPaintingInGallery");
             throw handleHttpClientException(ex);
         }
     }

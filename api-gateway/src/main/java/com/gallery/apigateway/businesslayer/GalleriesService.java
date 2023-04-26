@@ -4,7 +4,7 @@ import com.gallery.apigateway.presentationlayer.GalleryRequestModel;
 import com.gallery.apigateway.presentationlayer.GalleryResponseModel;
 
 public interface GalleriesService {
-    GalleryResponseModel getGallery(String galleryId);
+    GalleryResponseModel getGalleryById(String galleryId);
     GalleryResponseModel[] getAllGalleries();
 
     GalleryResponseModel addGallery(GalleryRequestModel galleryRequestModel);

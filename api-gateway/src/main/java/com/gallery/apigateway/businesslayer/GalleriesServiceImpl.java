@@ -17,7 +17,7 @@ public class GalleriesServiceImpl implements GalleriesService{
     }
 
     @Override
-    public GalleryResponseModel getGallery(String galleryId) {
+    public GalleryResponseModel getGalleryById(String galleryId) {
         return galleryServiceClient.getGallery(galleryId);
     }
 

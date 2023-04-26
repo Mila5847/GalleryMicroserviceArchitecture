@@ -24,7 +24,7 @@ public class GalleriesController {
     )
     ResponseEntity<GalleryResponseModel> getGallery(@PathVariable String galleryId){
         log.debug("1. Received in api-gateway galleries controller getGalleryAggregate with galleryId: " + galleryId);
-        return ResponseEntity.ok().body(galleriesService.getGallery(galleryId));
+        return ResponseEntity.ok().body(galleriesService.getGalleryById(galleryId));
     }
 
     @GetMapping(
@@ -59,7 +59,7 @@ public class GalleriesController {
             value = "/{galleryId}",
             produces = "application/json"
     )
-    ResponseEntity<Void> deleteGallery(@PathVariable String galleryId){
+    ResponseEntity<Void> removeGallery(@PathVariable String galleryId){
         log.debug("1. Received in api-gateway galleries controller deleteGallery with galleryId: " + galleryId);
         galleriesService.deleteGallery(galleryId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

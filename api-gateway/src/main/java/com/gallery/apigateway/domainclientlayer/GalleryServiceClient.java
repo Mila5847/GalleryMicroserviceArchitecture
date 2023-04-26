@@ -100,6 +100,7 @@ public class GalleryServiceClient {
             throw handleHttpClientException(ex);
         }
     }
+
     private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
         if (ex.getStatusCode() == NOT_FOUND) {
             return new NotFoundException(getErrorMessage(ex));

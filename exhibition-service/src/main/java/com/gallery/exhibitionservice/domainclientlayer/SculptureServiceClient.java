@@ -1,13 +1,9 @@
-package com.gallery.apigateway.domainclientlayer;
+package com.gallery.exhibitionservice.domainclientlayer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gallery.apigateway.presentationlayer.GalleryRequestModel;
-import com.gallery.apigateway.presentationlayer.GalleryResponseModel;
-import com.gallery.apigateway.presentationlayer.SculptureRequestModel;
-import com.gallery.apigateway.presentationlayer.SculptureResponseModel;
-import com.gallery.apigateway.utils.HttpErrorInfo;
-import com.gallery.apigateway.utils.exceptions.InvalidInputException;
-import com.gallery.apigateway.utils.exceptions.NotFoundException;
+import com.gallery.exhibitionservice.utils.HttpErrorInfo;
+import com.gallery.exhibitionservice.utils.exceptions.InvalidInputException;
+import com.gallery.exhibitionservice.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,14 +17,14 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @Slf4j
 @Component
-public class SculpturesServiceClient {
+public class  SculptureServiceClient {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final String SCULPTURE_SERVICE_BASE_URL;
-    public SculpturesServiceClient(RestTemplate restTemplate,
-                                 ObjectMapper objectMapper,
-                                 @Value("${app.sculpture-service.host}") String sculptureServiceHost,
-                                 @Value("${app.sculpture-service.port}") String sculptureServicePort) {
+    public SculptureServiceClient(RestTemplate restTemplate,
+                                  ObjectMapper objectMapper,
+                                  @Value("${app.sculpture-service.host}") String sculptureServiceHost,
+                                  @Value("${app.sculpture-service.port}") String sculptureServicePort) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.SCULPTURE_SERVICE_BASE_URL = "http://" + sculptureServiceHost + ":" + sculptureServicePort + "/api/v1/galleries";

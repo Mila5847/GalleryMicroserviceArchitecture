@@ -1,19 +1,25 @@
 package com.gallery.exhibitionservice.presentationlayer;
 
-import lombok.AccessLevel;
+import com.gallery.exhibitionservice.domainclientlayer.PaintingResponseModel;
+import com.gallery.exhibitionservice.domainclientlayer.SculptureResponseModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
-/*@Value
+import java.util.List;
+
+@Value
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class ExhibitionRequestModel {
-    private String exhibitionId;
-    private String galleryId;
-    private String name;
-    private int roomNumber;
-    private int duration;
-    private String startDay;
-    private String endDay;
-}*/
+    String galleryId;
+
+    String exhibitionName;
+    int roomNumber;
+    int duration;
+    String startDay;
+    String endDay;
+
+    List<PaintingResponseModel> paintings;
+    List<SculptureResponseModel> sculptures;
+}

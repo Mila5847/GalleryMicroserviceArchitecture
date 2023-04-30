@@ -2,68 +2,50 @@
 server:
   error:
     include-message: always
-
 logging:
   level:
     root: INFO
     com.example: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
----
-# for test
-
-# for h2
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 spring:
-  config:
-    activate:
-      on-profile: h2
-  h2:
-    console:
-      enabled: true
-  datasource:
-    url: jdbc:h2:mem:exhibition-db;DB_CLOSE_DELAY=-1
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create
-      #let jpa create the schema
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        auto-quote-keyword: true
-
-    #defer-datasource-initialization: true
-  sql:
-    init:
-      platform: h2
-      mode: always
-
+  data:
+    mongodb:
+      username: user
+      password: pwd
+      host: localhost
+      port: 27017
+      database: exhibition-db
+      authentication-database: admin
+      auto-index-creation: true
+de:
+flapdoodle:
+    mongodb:
+      embedded:
+        version: 5.0.5
+app:
+  gallery-service:
+    host: localhost
+    port: 7001
+  painting-service:
+    host: localhost
+    port: 7002
+  sculpture-service:
+    host: localhost
+    port: 7003
 ---
-# for docker
-
 spring:
-  datasource:
-    url: jdbc:mysql://mysql1/exhibition-db
-    username: user
-    password: pwd
-
-  jpa:
-    hibernate:
-      ddl-auto: none
-
-  config:
-    activate:
-      on-profile: docker
-
-  sql:
-    init:
-      platform: mysql
-      mode: always
-
+    config:
+      activate:
+        on-profile: docker
+spring.data.mongodb.host: mongodb
+app:
+  gallery-service:
+    host: gallery-service
+    port: 8080
+  painting-service:
+    host: painting-service
+    port: 8080
+  sculpture-service:
+    host: sculpture-service
+    port: 8080
 server.port: 8080
-
-spring.datasource.hikari.initializationFailTimeout: 60000

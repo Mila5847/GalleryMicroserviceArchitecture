@@ -1,16 +1,16 @@
 package com.gallery.exhibitionservice.businesslayer;
 
-/*import com.gallery.exhibitionservice.presentationlayer.ExhibitionResponseModel;
-import com.gallery.exhibitionservice.presentationlayer.GalleryExhibitionPaintingSculptureRequestModel;
-import com.gallery.exhibitionservice.presentationlayer.GalleryExhibitionPaintingSculptureResponseModel;
+import com.gallery.exhibitionservice.presentationlayer.ExhibitionRequestModel;
+import com.gallery.exhibitionservice.presentationlayer.ExhibitionResponseModel;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ExhibitionService {
 
-    List<ExhibitionResponseModel> getExhibitionsInGallery(String galleryId);
-    GalleryExhibitionPaintingSculptureResponseModel getExhibitionByIdInGallery(String galleryId, String exhibitionId);
+    List<ExhibitionResponseModel> getAllExhibitions();
+    ExhibitionResponseModel createExhibition(String galleryId, ExhibitionRequestModel exhibitionRequestModel);
+
+    /*GalleryExhibitionPaintingSculptureResponseModel getExhibitionByIdInGallery(String galleryId, String exhibitionId);
     GalleryExhibitionPaintingSculptureResponseModel getExhibitionByField(String galleryId, Map<String, String> queryParams);
    // GalleryExhibitionPaintingResponseModel addExhibitionToGallery(String galleryId, ExhibitionRequestModel exhibitionRequestModel);
    // GalleryExhibitionPaintingResponseModel updateExhibitionInGallery(String galleryId, String exhibitionId, ExhibitionRequestModel exhibitionRequestModel);
@@ -20,5 +20,5 @@ public interface ExhibitionService {
 
     GalleryExhibitionPaintingSculptureResponseModel addExhibitionInGallery(String galleryId, GalleryExhibitionPaintingSculptureRequestModel galleryExhibitionPaintingRequestModel);
 
-    GalleryExhibitionPaintingSculptureResponseModel updateExhibitionInGallery(String galleryId, String exhibitionId, GalleryExhibitionPaintingSculptureRequestModel galleryExhibitionPaintingRequestModel);
-}*/
+    GalleryExhibitionPaintingSculptureResponseModel updateExhibitionInGallery(String galleryId, String exhibitionId, GalleryExhibitionPaintingSculptureRequestModel galleryExhibitionPaintingRequestModel);*/
+}

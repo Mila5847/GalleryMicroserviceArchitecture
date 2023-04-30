@@ -19,6 +19,12 @@ public class GlobalControllerExceptionHandler {
         return createHttpErrorInfo(NOT_FOUND, request, ex);
     }
 
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class) //when this exception happen, this function would be called
+    public HttpErrorInfo handleBadRequest(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(BAD_REQUEST, request, ex);
+    }
+
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(ExistingGalleryNotFoundException.class) //when this exception happen, this function would be called
     public HttpErrorInfo handleExistingGalleryNotFoundException(WebRequest request, Exception ex) {

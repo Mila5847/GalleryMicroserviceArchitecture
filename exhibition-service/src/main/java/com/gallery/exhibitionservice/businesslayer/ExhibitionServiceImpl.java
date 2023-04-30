@@ -1,22 +1,87 @@
 package com.gallery.exhibitionservice.businesslayer;
 
-/*import com.gallery.exhibitionservice.datalayer.Exhibition;
+import com.gallery.exhibitionservice.datalayer.Exhibition;
+import com.gallery.exhibitionservice.datalayer.ExhibitionIdentifier;
 import com.gallery.exhibitionservice.datalayer.ExhibitionRepository;
-import com.gallery.exhibitionservice.datamapperlayer.ExhibitionRequestMapper;
+import com.gallery.exhibitionservice.datalayer.GalleryIdentifier;
 import com.gallery.exhibitionservice.datamapperlayer.ExhibitionResponseMapper;
-import com.gallery.exhibitionservice.datamapperlayer.GalleryExhibitionPaintingSculptureResponseMapper;
+
+import com.gallery.exhibitionservice.domainclientlayer.*;
+import com.gallery.exhibitionservice.presentationlayer.ExhibitionRequestModel;
 import com.gallery.exhibitionservice.presentationlayer.ExhibitionResponseModel;
-import com.gallery.exhibitionservice.presentationlayer.GalleryExhibitionPaintingSculptureResponseModel;
+
+import com.gallery.exhibitionservice.domainclientlayer.PaintingResponseModel;
+import com.gallery.exhibitionservice.domainclientlayer.SculptureResponseModel;
+import com.gallery.exhibitionservice.utils.exceptions.BadRequestException;
+import com.gallery.exhibitionservice.utils.exceptions.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class ExhibitionServiceImpl implements ExhibitionService {
-    ExhibitionRepository exhibitionRepository;
+
+    private final ExhibitionRepository exhibitionRepository;
+    private final ExhibitionResponseMapper exhibitionResponseMapper;
+
+    private final GalleryServiceClient galleryServiceClient;
+
+    private final PaintingServiceClient paintingServiceClient;
+
+    private final SculptureServiceClient sculptureServiceClient;
+
+    @Override
+    public List<ExhibitionResponseModel> getAllExhibitions() {
+       // check if gallery exists
+        List<Exhibition> exhibitions = exhibitionRepository.findAll();
+        return exhibitionResponseMapper.entityListToResponseModelList(exhibitions);
+    }
+
+    @Override
+    public ExhibitionResponseModel createExhibition(String galleryId, ExhibitionRequestModel exhibitionRequestModel) {
+        // orchestration pattern
+
+        // validate gallery id by getting its data from gallery-service
+        GalleryResponseModel galleryResponseModel = galleryServiceClient.getGallery(galleryId);
+        if(galleryResponseModel == null){
+            throw new NotFoundException("Unknown gallery id " + galleryId);
+        }
+
+        for (PaintingResponseModel painting: exhibitionRequestModel.getPaintings()) {
+            if(paintingServiceClient.getPaintingAggregateById(galleryId, painting.getPaintingId()) == null ){
+                throw new BadRequestException("The painting should come from the gallery with id " + galleryId);
+            }
+        }
+
+        for (SculptureResponseModel sculpture: exhibitionRequestModel.getSculptures()) {
+            if(sculptureServiceClient.getSculptureById(galleryId, sculpture.getSculptureId()) == null){
+                throw new BadRequestException("The sculpture should come from the gallery with id " + galleryId);
+            }
+        }
+
+        Exhibition exhibition = new Exhibition().builder()
+                .exhibitionIdentifier(new ExhibitionIdentifier())
+                .galleryIdentifier(new GalleryIdentifier(galleryId))
+                .galleryName(galleryResponseModel.getName())
+                .exhibitionName(exhibitionRequestModel.getExhibitionName())
+                .roomNumber(exhibitionRequestModel.getRoomNumber())
+                .duration(exhibitionRequestModel.getDuration())
+                .startDay(exhibitionRequestModel.getStartDay())
+                .endDay(exhibitionRequestModel.getEndDay())
+                .paintings(exhibitionRequestModel.getPaintings())
+                .sculptures(exhibitionRequestModel.getSculptures())
+                .build();
+
+        Exhibition saved = exhibitionRepository.save(exhibition);
+        return exhibitionResponseMapper.entityToResponseModel(saved);
+
+    }
+
+    /*ExhibitionRepository exhibitionRepository;
     ExhibitionResponseMapper exhibitionResponseMapper;
     ExhibitionRequestMapper exhibitionRequestMapper;
 
@@ -336,6 +401,6 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         ExhibitionResponseModel exhibitionResponseModel = exhibitionResponseMapper.entityToResponseModel(updatedExhibition);
         GalleryExhibitionPaintingSculptureResponseModel galleryExhibitionPaintingSculptureResponseModel = galleryExhibitionPaintingPainterResponseMapper.entityToResponseModel(gallery, paintingResponseModels, exhibitionResponseModel, sculptureResponseModels);
         return galleryExhibitionPaintingSculptureResponseModel;
-    }
+    }*/
 
-}*/
+}

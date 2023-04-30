@@ -1,11 +1,11 @@
 package com.gallery.exhibitionservice.datalayer;
 
-import jakarta.persistence.Embeddable;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.UUID;
 
-/*@Embeddable
 public class ExhibitionIdentifier {
+    @Indexed(unique = true)
     private String exhibitionId;
 
     public ExhibitionIdentifier() {
@@ -19,4 +19,4 @@ public class ExhibitionIdentifier {
     public String getExhibitionId(){
         return exhibitionId;
     }
-}*/
+}

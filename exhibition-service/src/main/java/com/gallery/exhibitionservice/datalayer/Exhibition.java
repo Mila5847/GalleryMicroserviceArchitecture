@@ -1,36 +1,35 @@
 package com.gallery.exhibitionservice.datalayer;
-
-import jakarta.persistence.*;
+import com.gallery.exhibitionservice.domainclientlayer.PaintingResponseModel;
+import com.gallery.exhibitionservice.domainclientlayer.SculptureResponseModel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-/*@Table(name="exhibitions")
-@Entity
+import java.util.List;
+
+@Document(collection = "exhibitions")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Exhibition {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @Embedded
-    private ExhibitionIdentifier exhibitionIdentifier;
+    private String id;
 
-    @Embedded
+    private ExhibitionIdentifier exhibitionIdentifier;
     private GalleryIdentifier galleryIdentifier;
-    private String name;
+
+    private String galleryName;
+
+    private String exhibitionName;
     private int roomNumber;
     private int duration;
     private String startDay;
     private String endDay;
 
-    public Exhibition() {
-        this.exhibitionIdentifier = new ExhibitionIdentifier();
-    }
-
-    public Exhibition(String name, int roomNumber, int duration, String startDay, String endDay) {
-        this.exhibitionIdentifier = new ExhibitionIdentifier();
-        this.name = name;
-        this.roomNumber = roomNumber;
-        this.duration = duration;
-        this.startDay = startDay;
-        this.endDay = endDay;
-    }
-}*/
+    private List<PaintingResponseModel> paintings;
+    private List<SculptureResponseModel> sculptures;
+}

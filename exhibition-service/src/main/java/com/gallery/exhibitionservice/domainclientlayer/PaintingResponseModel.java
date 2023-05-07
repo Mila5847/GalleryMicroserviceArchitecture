@@ -8,7 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaintingResponseModel extends RepresentationModel<PaintingResponseModel> {
+public class PaintingResponseModel {
     String paintingId;
     String title;
     int yearCreated;

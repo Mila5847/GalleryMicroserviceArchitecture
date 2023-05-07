@@ -93,6 +93,7 @@ rectangle "Art events subdomain" {
         Exhibition --> ExhibitionIdentifier
         ExhibitionIdentifier "1" <--* "*" Sculpture
         ExhibitionIdentifier "1" <--* "*" Painting
+        ExhibitionIdentifier "1" <--* "*" Gallery
 
         note "A painting cannot be in more than one exhibition at the same time" as exhibitionInvariantPainting
         note "A sculpture cannot be in more than one exhibition at the same time" as exhibitionInvariantSculpture

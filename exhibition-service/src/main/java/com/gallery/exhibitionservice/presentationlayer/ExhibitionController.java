@@ -22,10 +22,10 @@ public class ExhibitionController {
         return ResponseEntity.ok().body((exhibitionService.getAllExhibitions()));
     }
 
-    @PostMapping()
+    /*@PostMapping()
     ResponseEntity<ExhibitionResponseModel> createExhibition(String galleryId, ExhibitionRequestModel exhibitionRequestModel){
         return ResponseEntity.status(HttpStatus.CREATED).body(exhibitionService.createExhibition(galleryId, exhibitionRequestModel));
-    }
+    }*/
 
     /*ExhibitionService exhibitionService;
 

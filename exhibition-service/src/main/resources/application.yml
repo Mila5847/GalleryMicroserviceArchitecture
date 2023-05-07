@@ -2,23 +2,26 @@
 server:
   error:
     include-message: always
+
 logging:
   level:
     root: INFO
-    com.example: DEBUG
+    com.gallery: DEBUG
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
 spring:
   data:
     mongodb:
       username: user
       password: pwd
       host: localhost
-      port: 27017
-      database: exhibition-db
+      port: 0
+      database: exhibitions-db
       authentication-database: admin
       auto-index-creation: true
+
 de:
-flapdoodle:
+  flapdoodle:
     mongodb:
       embedded:
         version: 5.0.5
@@ -34,10 +37,13 @@ app:
     port: 7003
 ---
 spring:
-    config:
-      activate:
-        on-profile: docker
+  config:
+    activate:
+      on-profile: docker
+
 spring.data.mongodb.host: mongodb
+spring.data.mongodb.port: 27017
+
 app:
   gallery-service:
     host: gallery-service

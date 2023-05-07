@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Component
 public class DatabaseLoaderService implements CommandLineRunner {
 
@@ -28,7 +29,7 @@ public class DatabaseLoaderService implements CommandLineRunner {
         String startDay1 = "Monday";
         String endDay1 = "Wednesday";
 
-        List<PaintingResponseModel> paintingResponseModelList = new ArrayList<>();
+        List<PaintingResponseModel> paintingResponseModels = new ArrayList<>();
         PaintingResponseModel paintingResponseModel1 = new PaintingResponseModel();
         paintingResponseModel1.setPaintingId("3ed9654a-b773-4aa0-ae6b-b22afb636c8e");
         paintingResponseModel1.setTitle("The Starry Night");
@@ -43,10 +44,10 @@ public class DatabaseLoaderService implements CommandLineRunner {
         paintingResponseModel2.setPainterId("f4c80444-5acf-4d57-8902-9f55255e9e55");
         paintingResponseModel2.setGalleryId("ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8");
 
-        paintingResponseModelList.add(paintingResponseModel1);
-        paintingResponseModelList.add(paintingResponseModel2);
+        paintingResponseModels.add(paintingResponseModel1);
+        paintingResponseModels.add(paintingResponseModel2);
 
-        List<SculptureResponseModel> sculptureResponseModelList = new ArrayList<>();
+        List<SculptureResponseModel> sculptureResponseModels= new ArrayList<>();
 
         SculptureResponseModel sculptureResponseModel1 = new SculptureResponseModel();
         sculptureResponseModel1.setSculptureId("acf18748-b00c-4f3a-9d0b-b1b1fdf9c240");
@@ -62,8 +63,8 @@ public class DatabaseLoaderService implements CommandLineRunner {
         sculptureResponseModel2.setTexture("Smooth");
         sculptureResponseModel2.setGalleryId("ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8");
 
-        sculptureResponseModelList.add(sculptureResponseModel1);
-        sculptureResponseModelList.add(sculptureResponseModel2);
+        sculptureResponseModels.add(sculptureResponseModel1);
+        sculptureResponseModels.add(sculptureResponseModel2);
 
         Exhibition exhibition1 = new Exhibition().builder()
                 .exhibitionIdentifier(exhibitionIdentifier1)
@@ -74,8 +75,8 @@ public class DatabaseLoaderService implements CommandLineRunner {
                 .duration(duration1)
                 .startDay(startDay1)
                 .endDay(endDay1)
-                .paintings(paintingResponseModelList)
-                .sculptures(sculptureResponseModelList)
+                .paintings(paintingResponseModels)
+                .sculptures(sculptureResponseModels)
                 .build();
 
         exhibitionRepository.insert(exhibition1);

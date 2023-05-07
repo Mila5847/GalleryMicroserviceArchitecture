@@ -30,4 +30,5 @@ public interface ExhibitionResponseMapper {
     ExhibitionResponseModel entityToResponseModel(Exhibition exhibition);
 
     List<ExhibitionResponseModel> entityListToResponseModelList(List<Exhibition> exhibitions);
+    // links photos
 }

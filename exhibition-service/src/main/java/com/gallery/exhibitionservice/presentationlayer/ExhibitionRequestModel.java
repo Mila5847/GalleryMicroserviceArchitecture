@@ -20,6 +20,6 @@ public class ExhibitionRequestModel {
     String startDay;
     String endDay;
 
-    List<PaintingResponseModel> paintings;
-    List<SculptureResponseModel> sculptures;
+    //PaintingResponseModel[] paintings;
+    //SculptureResponseModel[] sculptures;
 }

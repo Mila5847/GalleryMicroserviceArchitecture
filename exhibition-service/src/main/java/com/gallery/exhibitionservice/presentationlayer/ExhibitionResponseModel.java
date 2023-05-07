@@ -26,6 +26,6 @@ public class ExhibitionResponseModel {
     private String startDay;
     private String endDay;
 
-    private List<PaintingResponseModel> paintings;
-    private List<SculptureResponseModel> sculptures;
+    //private PaintingResponseModel[] paintings;
+    //private SculptureResponseModel[] sculptures;
 }

@@ -41,7 +41,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         return exhibitionResponseMapper.entityListToResponseModelList(exhibitions);
     }
 
-    @Override
+    /*@Override
     public ExhibitionResponseModel createExhibition(String galleryId, ExhibitionRequestModel exhibitionRequestModel) {
         // orchestration pattern
 
@@ -79,7 +79,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         Exhibition saved = exhibitionRepository.save(exhibition);
         return exhibitionResponseMapper.entityToResponseModel(saved);
 
-    }
+    }*/
 
     /*ExhibitionRepository exhibitionRepository;
     ExhibitionResponseMapper exhibitionResponseMapper;

@@ -2,24 +2,21 @@ package com.gallery.exhibitionservice.presentationlayer;
 
 import com.gallery.exhibitionservice.domainclientlayer.PaintingResponseModel;
 import com.gallery.exhibitionservice.domainclientlayer.SculptureResponseModel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 import java.util.List;
 
-@Value
 @Builder
 @AllArgsConstructor
+@Data
+@NoArgsConstructor
 public class ExhibitionRequestModel {
-    String galleryId;
-
     String exhibitionName;
-    int roomNumber;
-    int duration;
+    Integer roomNumber;
+    Integer duration;
     String startDay;
     String endDay;
 
-    //PaintingResponseModel[] paintings;
-    //SculptureResponseModel[] sculptures;
+    List<PaintingResponseModel> paintings;
+    List<SculptureResponseModel> sculptures;
 }

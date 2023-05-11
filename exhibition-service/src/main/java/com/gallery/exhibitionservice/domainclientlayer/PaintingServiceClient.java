@@ -45,7 +45,9 @@ public class PaintingServiceClient {
     }
 
     public PaintingPainterResponseModel getPaintingAggregateById(String galleryId, String paintingId) {
+        log.debug("GOT INTO GET-PAINTING-AGGREGATE-BY-ID");
         PaintingPainterResponseModel paintingPainterResponseModel;
+        log.debug("GOT INTO GET-PAINTING-AGGREGATE-BY-ID TRY STATEMENT");
         try {
             String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings/" + paintingId;
             paintingPainterResponseModel = restTemplate

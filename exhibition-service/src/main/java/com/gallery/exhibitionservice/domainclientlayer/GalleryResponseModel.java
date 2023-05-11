@@ -10,7 +10,7 @@ import org.springframework.hateoas.RepresentationModel;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GalleryResponseModel extends RepresentationModel<GalleryResponseModel>{
+public class GalleryResponseModel extends RepresentationModel<GalleryResponseModel> {
     String galleryId;
     String name;
     String openFrom;

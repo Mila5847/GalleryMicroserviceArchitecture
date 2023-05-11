@@ -41,15 +41,17 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         return exhibitionResponseMapper.entityListToResponseModelList(exhibitions);
     }
 
-    /*@Override
+    @Override
     public ExhibitionResponseModel createExhibition(String galleryId, ExhibitionRequestModel exhibitionRequestModel) {
         // orchestration pattern
 
+        //log.debug("PAINTINGS SIZE " + exhibitionRequestModel.getPaintings().size());
+        //log.debug("SCULPTURES SIZE " + exhibitionRequestModel.getSculptures().size());
         // validate gallery id by getting its data from gallery-service
-        GalleryResponseModel galleryResponseModel = galleryServiceClient.getGallery(galleryId);
+        /*GalleryResponseModel galleryResponseModel = galleryServiceClient.getGallery(galleryId);
         if(galleryResponseModel == null){
             throw new NotFoundException("Unknown gallery id " + galleryId);
-        }
+        }*/
 
         for (PaintingResponseModel painting: exhibitionRequestModel.getPaintings()) {
             if(paintingServiceClient.getPaintingAggregateById(galleryId, painting.getPaintingId()) == null ){
@@ -66,7 +68,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         Exhibition exhibition = new Exhibition().builder()
                 .exhibitionIdentifier(new ExhibitionIdentifier())
                 .galleryIdentifier(new GalleryIdentifier(galleryId))
-                .galleryName(galleryResponseModel.getName())
+                .galleryName("SOME GALLERY")
                 .exhibitionName(exhibitionRequestModel.getExhibitionName())
                 .roomNumber(exhibitionRequestModel.getRoomNumber())
                 .duration(exhibitionRequestModel.getDuration())
@@ -79,7 +81,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         Exhibition saved = exhibitionRepository.save(exhibition);
         return exhibitionResponseMapper.entityToResponseModel(saved);
 
-    }*/
+    }
 
     /*ExhibitionRepository exhibitionRepository;
     ExhibitionResponseMapper exhibitionResponseMapper;

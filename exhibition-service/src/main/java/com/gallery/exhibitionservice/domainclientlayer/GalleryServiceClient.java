@@ -45,17 +45,18 @@ public class GalleryServiceClient {
     }
     public GalleryResponseModel getGallery(String galleryId) {
         GalleryResponseModel galleryResponseModel;
+        log.debug("GOT INTO GET GALLERY");
         try {
+            log.debug("GOT INTO GET GALLERY try statement");
             String url = GALLERY_SERVICE_BASE_URL + "/" + galleryId;
             galleryResponseModel = restTemplate
                     .getForObject(url, GalleryResponseModel.class);
-
             log.debug("5. Received in API-Gateway Gallery Service Client getGallery with galleryResponseModel with id: " + galleryResponseModel.getGalleryId());
+            return galleryResponseModel;
         } catch (HttpClientErrorException ex) {
             log.debug("5. Caught an exception in API-Gateway Gallery Service Client getGallery with galleryResponseModel.");
             throw handleHttpClientException(ex);
         }
-        return galleryResponseModel;
     }
 
     public GalleryResponseModel addGallery(GalleryRequestModel galleryRequestModel){

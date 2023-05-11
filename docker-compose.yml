@@ -19,7 +19,6 @@ services:
     depends_on:
       mysql1:
         condition: service_healthy
-
   painting-service:
     # to find the Dockerfile
     build: painting-service
@@ -29,7 +28,6 @@ services:
     depends_on:
       mysql2:
         condition: service_healthy
-
   sculpture-service:
     # to find the Dockerfile
     build: sculpture-service
@@ -39,7 +37,6 @@ services:
     depends_on:
       mysql3:
         condition: service_healthy
-
   exhibition-service:
     build: exhibition-service
     hostname: exhibition-service
@@ -47,6 +44,9 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - mongodb
+      - gallery-service
+      - painting-service
+      - sculpture-service
   mysql1:
     image: mysql:5.7
     container_name: MySql1

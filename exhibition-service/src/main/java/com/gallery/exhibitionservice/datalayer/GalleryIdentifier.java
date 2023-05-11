@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.UUID;
 public class GalleryIdentifier {
-    @Indexed(unique = true)
+    //@Indexed(unique = true)
     private String galleryId;
 
     public GalleryIdentifier(String galleryId) {

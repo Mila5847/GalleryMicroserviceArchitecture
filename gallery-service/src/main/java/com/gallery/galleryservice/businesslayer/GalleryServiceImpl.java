@@ -21,9 +21,6 @@ public class GalleryServiceImpl implements GalleryService{
     private GalleryRepository galleryRepository;
     private GalleryResponseMapper galleryResponseMapper;
     private GalleryRequestMapper galleryRequestMapper;
-   /* private PaintingRepository paintingRepository;
-
-    private ExhibitionRepository exhibitionRepository;*/
 
     public GalleryServiceImpl(GalleryRepository galleryRepository, GalleryResponseMapper galleryResponseMapper, GalleryRequestMapper galleryRequestMapper) {
         this.galleryRepository = galleryRepository;
@@ -89,22 +86,12 @@ public class GalleryServiceImpl implements GalleryService{
         return galleryResponse;
     }
 
-    /*@Override
-    public void removeAllGalleries() {
-        galleryRepository.deleteAll();
-    }*/
-
     @Override
     public void removeGalleryById(String galleryId) {
         Gallery existingGallery = galleryRepository.findByGalleryIdentifier_GalleryId(galleryId);
         if(existingGallery == null){
             throw new ExistingGalleryNotFoundException("Gallery with id: " + galleryId + " does not exist.");
         }
-
-        /*List<Painting> paintings = paintingRepository.findAllByGalleryIdentifier_GalleryId(galleryId);
-
-        List<Exhibition> exhibitions = exhibitionRepository.findAllByGalleryIdentifier_GalleryId(galleryId);
-        exhibitions.forEach(exhibition -> exhibitionRepository.delete(exhibition));*/
 
         galleryRepository.delete(existingGallery);
     }

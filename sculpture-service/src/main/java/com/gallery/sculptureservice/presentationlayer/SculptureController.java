@@ -17,19 +17,14 @@ public class SculptureController {
     }
 
     @GetMapping("/sculptures")
-    public List<SculptureResponseModel> getSculpturesInGallery(@PathVariable String galleryId){
-        return sculptureService.getSculpturesInGallery(galleryId);
+    public ResponseEntity<List<SculptureResponseModel>> getSculpturesInGallery(@PathVariable String galleryId){
+        return ResponseEntity.status(HttpStatus.OK).body(sculptureService.getSculpturesInGallery(galleryId));
     }
 
     @GetMapping("/sculptures/{sculptureId}")
-    public SculptureResponseModel getSculptureByIdInGallery(@PathVariable String galleryId, @PathVariable String sculptureId){
-        return sculptureService.getSculptureByIdInGallery(galleryId, sculptureId);
+    public ResponseEntity<SculptureResponseModel> getSculptureByIdInGallery(@PathVariable String galleryId, @PathVariable String sculptureId){
+        return ResponseEntity.status(HttpStatus.OK).body(sculptureService.getSculptureByIdInGallery(galleryId, sculptureId));
     }
-
-    /*@GetMapping("/exhibitions/{exhibitionId}/sculpture")
-    public List<SculptureResponseModel> getSculpturesOfExhibitionInGallery(@PathVariable String galleryId, @PathVariable String exhibitionId){
-        return sculptureService.getSculpturesOfExhibitionInGallery(galleryId, exhibitionId);
-    }*/
 
     @PostMapping("/sculptures")
     public ResponseEntity<SculptureResponseModel> addSculptureToGallery(@PathVariable String galleryId,

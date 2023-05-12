@@ -26,39 +26,39 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ExistingGalleryNotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handleExistingGalleryNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(ExistingExhibitionNotFoundException.class) //when this exception happen, this function would be called
     public HttpErrorInfo handleExistingExhibitionNotFoundException(WebRequest request, Exception ex) {
         return createHttpErrorInfo(NOT_FOUND, request, ex);
     }
 
-    @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler(NameMissingFromQueryParamsException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handleExistingExhibitionByNameNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(BAD_REQUEST, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ExistingPaintingNotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handlePaintingExhibitionNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ExistingPainterNotFoundException.class) //when this exception happen, this function would be called
-    public HttpErrorInfo handlePainterExhibitionNotFoundException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
-    }
-
-    @ResponseStatus(UNPROCESSABLE_ENTITY) //422 error status
+    @ResponseStatus(UNPROCESSABLE_ENTITY) //422
     @ExceptionHandler(InvalidInputException.class) //when this exception happen, this function would be called
     public HttpErrorInfo handleInvalidInputException(WebRequest request, Exception ex) {
         return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST) //400
+    @ExceptionHandler(PaintingAlreadyInExhibition.class) //when this exception happen, this function would be called
+    public HttpErrorInfo handlePaintingAlreadyExistsException(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(BAD_REQUEST, request, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST) //400
+    @ExceptionHandler(SculptureAlreadyInExhibition.class) //when this exception happen, this function would be called
+    public HttpErrorInfo handleSculptureAlreadyExistsException(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(BAD_REQUEST, request, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST) //400
+    @ExceptionHandler(PaintingNotFromGalleryException.class) //when this exception happen, this function would be called
+    public HttpErrorInfo handlePaintingNotFromGalleryException(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(BAD_REQUEST, request, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST) //400
+    @ExceptionHandler(SculptureNotFromGalleryException.class) //when this exception happen, this function would be called
+    public HttpErrorInfo handleSculptureNotFromGalleryException(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(BAD_REQUEST, request, ex);
     }
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, WebRequest request, Exception ex) {

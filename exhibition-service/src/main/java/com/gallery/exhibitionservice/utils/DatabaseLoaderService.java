@@ -21,6 +21,7 @@ public class DatabaseLoaderService implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         ExhibitionIdentifier exhibitionIdentifier1 = new ExhibitionIdentifier();
+        exhibitionIdentifier1.setExhibitionId("5ea10d1d-46fb-4374-a39c-27d643aa37e3");
         GalleryIdentifier galleryIdentifier1 = new GalleryIdentifier("ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8");
         String galleryName1 = "Art Gallery of Ontario";
         String exhibitionName1 = "Ontario's Exhibition";

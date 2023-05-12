@@ -18,21 +18,21 @@ public class PaintingController {
     }
 
     @GetMapping("/paintings")
-    public List<PaintingResponseModel> getPaintingsInGallery(@PathVariable String galleryId){
-        return paintingPainterService.getPaintingsInGallery(galleryId);
+    public ResponseEntity<List<PaintingResponseModel>> getPaintingsInGallery(@PathVariable String galleryId){
+        return ResponseEntity.status(HttpStatus.OK).body(paintingPainterService.getPaintingsInGallery(galleryId));
     }
 
 
     @GetMapping("/paintings/{paintingId}")
-    public PaintingPainterResponseModel getPaintingByIdInGallery(@PathVariable String galleryId,
+    public ResponseEntity<PaintingPainterResponseModel> getPaintingByIdInGallery(@PathVariable String galleryId,
                                                                  @PathVariable String paintingId){
-        return paintingPainterService.getPaintingByIdInGallery(galleryId, paintingId);
+        return ResponseEntity.status(HttpStatus.OK).body(paintingPainterService.getPaintingByIdInGallery(galleryId, paintingId));
     }
 
     @GetMapping("/painters/{painterId}/paintings")
-    public PaintingsOfPainterResponseModel getPaintingsByPainterIdInGallery(@PathVariable String galleryId,
+    public ResponseEntity<PaintingsOfPainterResponseModel> getPaintingsByPainterIdInGallery(@PathVariable String galleryId,
                                                                             @PathVariable String painterId){
-        return paintingPainterService.getPaintingsByPainterIdInGallery(galleryId, painterId);
+        return ResponseEntity.status(HttpStatus.OK).body(paintingPainterService.getPaintingsByPainterIdInGallery(galleryId, painterId));
     }
 
     @PostMapping("/paintings")
@@ -53,11 +53,6 @@ public class PaintingController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    /*@DeleteMapping()
-    public void removeAllPaintingsIdInGallery(@PathVariable String galleryId){
-        paintingPainterService.removeAllPaintingsInGallery(galleryId);
-    }*/
-
     @PostMapping("/paintings/{paintingId}/painters")
     public ResponseEntity<PaintingPainterResponseModel> addPainterToPaintingInGallery(@PathVariable String galleryId, @PathVariable String paintingId, @RequestBody PainterRequestModel painterRequestModel){
        return ResponseEntity.status(HttpStatus.CREATED).body(paintingPainterService.addPainterToPaintingInGallery(galleryId, paintingId, painterRequestModel));
@@ -73,20 +68,4 @@ public class PaintingController {
         paintingPainterService.removePainterOfPaintingInGallery(galleryId, paintingId, painterId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-    /*@GetMapping("/exhibitions/{exhibitionId}/paintings")
-    public List<PaintingResponseModel> getPaintingsOfExhibitionInGallery(@PathVariable String galleryId, @PathVariable String exhibitionId){
-        return paintingPainterService.getPaintingsOfExhibitionInGallery(galleryId, exhibitionId);
-    }*/
-
-    /*@PutMapping("/exhibitions/{exhibitionId}/paintings/{paintingId}")
-    public PaintingPainterResponseModel addPaintingToExhibitionInGallery(@PathVariable String galleryId, @PathVariable String paintingId, @PathVariable String exhibitionId){
-        return paintingPainterService.addPaintingToExhibitionInGallery(galleryId, paintingId, exhibitionId);
-    }
-
-
-    @DeleteMapping("/exhibitions/{exhibitionId}/paintings/{paintingId}")
-    public void removePaintingFromExhibitionInGallery(@PathVariable String galleryId, @PathVariable String paintingId, @PathVariable String exhibitionId) {
-        paintingPainterService.removePaintingFromExhibitionInGallery(galleryId, paintingId, exhibitionId);
-    }*/
 }

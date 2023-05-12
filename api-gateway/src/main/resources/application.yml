@@ -17,6 +17,9 @@ app:
   sculpture-service:
     host: localhost
     port: 7003
+  exhibition-service:
+    host: localhost
+    port: 7004
 
 ---
 
@@ -37,4 +40,7 @@ app:
     port: 8080
   sculpture-service:
     host: sculpture-service
+    port: 8080
+  exhibition-service:
+    host: exhibition-service
     port: 8080

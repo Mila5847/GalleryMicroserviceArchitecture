@@ -70,7 +70,6 @@ public class PaintingsController {
         paintingsService.updatePaintingInGallery(galleryId, paintingId, paintingRequestModel);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
     @PutMapping(
             value = "/{galleryId}/paintings/{paintingId}/painters/{painterId}",
             produces = "application/json",
@@ -91,7 +90,6 @@ public class PaintingsController {
         paintingsService.removePaintingByIdInGallery(galleryId, paintingId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
     @DeleteMapping(
             value = "/{galleryId}/paintings/{paintingId}/painters/{painterId}",
             produces = "application/json"

@@ -18,18 +18,18 @@ public class GalleryController {
     }
 
     @GetMapping
-    public List<GalleryResponseModel> getGalleries(){
-        return galleryService.getGalleries();
+    public ResponseEntity<List<GalleryResponseModel>> getGalleries(){
+        return ResponseEntity.status(HttpStatus.OK).body(galleryService.getGalleries());
     }
 
     @GetMapping("/{galleryId}")
-    public GalleryResponseModel getGalleryById(@PathVariable String galleryId){
-        return galleryService.getGalleryById(galleryId);
+    public ResponseEntity<GalleryResponseModel> getGalleryById(@PathVariable String galleryId){
+        return ResponseEntity.status(HttpStatus.OK).body(galleryService.getGalleryById(galleryId));
     }
 
     @GetMapping("/gallery")
-    public GalleryResponseModel getGalleryByName(@RequestParam Map<String, String> queryParams){
-        return galleryService.getGalleryByName(queryParams);
+    public ResponseEntity<GalleryResponseModel> getGalleryByName(@RequestParam Map<String, String> queryParams){
+        return ResponseEntity.status(HttpStatus.OK).body(galleryService.getGalleryByName(queryParams));
     }
 
     @PostMapping
@@ -47,9 +47,4 @@ public class GalleryController {
         galleryService.removeGalleryById(galleryId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-   /* @DeleteMapping
-    public void removeAllGalleries(){
-        galleryService.removeAllGalleries();
-    }*/
 }

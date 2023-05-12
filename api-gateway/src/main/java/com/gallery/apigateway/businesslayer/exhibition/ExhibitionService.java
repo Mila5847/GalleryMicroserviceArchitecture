@@ -1,13 +1,13 @@
-package com.gallery.exhibitionservice.businesslayer;
+package com.gallery.apigateway.businesslayer.exhibition;
 
-import com.gallery.exhibitionservice.presentationlayer.ExhibitionRequestModel;
-import com.gallery.exhibitionservice.presentationlayer.ExhibitionResponseModel;
+import com.gallery.apigateway.presentationlayer.exhibition.ExhibitionRequestModel;
+import com.gallery.apigateway.presentationlayer.exhibition.ExhibitionResponseModel;
 
 import java.util.List;
 
 public interface ExhibitionService {
 
-    List<ExhibitionResponseModel> getAllExhibitions();
+    ExhibitionResponseModel[] getAllExhibitions();
 
     ExhibitionResponseModel getExhibitionById(String exhibitionId);
     ExhibitionResponseModel createExhibition(String galleryId, ExhibitionRequestModel exhibitionRequestModel);

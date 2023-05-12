@@ -46,7 +46,9 @@ public class PaintingServiceClient {
     }
 
     public PaintingPainterResponseModel getPaintingAggregateById(String galleryId, String paintingId) {
+        log.debug("GOT INTO GET-PAINTING-AGGREGATE-BY-ID");
         PaintingPainterResponseModel paintingPainterResponseModel;
+        log.debug("GOT INTO GET-PAINTING-AGGREGATE-BY-ID TRY STATEMENT");
         try {
             String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings/" + paintingId;
             paintingPainterResponseModel = restTemplate
@@ -88,12 +90,12 @@ public class PaintingServiceClient {
         return paintingPainterResponseModel;
     }
 
-    public  PaintingPainterResponseModel  addPainterToPaintingInGallery(String galleryId, String paintingId, PainterRequestModel painterResponseModel){
+    public  PaintingPainterResponseModel  addPainterToPaintingInGallery(String galleryId, String paintingId, PainterRequestModel painterRequestModel){
         PaintingPainterResponseModel paintingPainterResponseModel;
         try {
             String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings/" + paintingId + "/painters";
             paintingPainterResponseModel =
-                    restTemplate.postForObject(url, painterResponseModel,
+                    restTemplate.postForObject(url, painterRequestModel,
                             PaintingPainterResponseModel.class);
             log.debug("5. Received in API-Gateway Painting Service Client addPainterToPaintingInGallery");
         } catch (HttpClientErrorException ex) {

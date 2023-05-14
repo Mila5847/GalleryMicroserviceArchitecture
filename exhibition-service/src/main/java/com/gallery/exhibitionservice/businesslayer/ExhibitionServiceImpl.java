@@ -45,7 +45,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         // check if gallery exists
         Exhibition exhibition = exhibitionRepository.findByExhibitionIdentifier_ExhibitionId(exhibitionId);
         if(exhibition == null){
-            throw new NotFoundException("Unknown exhibition id " + exhibitionId);
+            throw new ExistingExhibitionNotFoundException("Unknown exhibition id " + exhibitionId);
         }
         return exhibitionResponseMapper.entityToResponseModel(exhibition);
     }
@@ -56,7 +56,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
 
         GalleryResponseModel galleryResponseModel = galleryServiceClient.getGallery(galleryId);
         if(galleryResponseModel == null){
-            throw new ExistingExhibitionNotFoundException("Unknown gallery id " + galleryId);
+            throw new ExistingGalleryNotFoundException("Unknown gallery id " + galleryId);
         }
 
         for (PaintingResponseModel painting: exhibitionRequestModel.getPaintings()) {
@@ -73,7 +73,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
                 throw new SculptureAlreadyInExhibition("The sculpture with id " + sculpture.getSculptureId() + " is already in an exhibition");
             }
             if(!sculpture.getGalleryId().equals(galleryId)){
-                throw new PaintingNotFromGalleryException("The sculpture should come from the gallery with id " + galleryId);
+                throw new SculptureNotFromGalleryException("The sculpture should come from the gallery with id " + galleryId);
             }
         }
 
@@ -158,7 +158,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
     public void removeExhibition(String exhibitionId) {
         Exhibition exhibition = exhibitionRepository.findByExhibitionIdentifier_ExhibitionId(exhibitionId);
         if(exhibition == null){
-            throw new NotFoundException("Unknown exhibition id " + exhibitionId);
+            throw new ExistingExhibitionNotFoundException("Unknown exhibition id " + exhibitionId);
         }
         exhibitionRepository.delete(exhibition);
     }

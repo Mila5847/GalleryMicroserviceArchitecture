@@ -7,7 +7,7 @@ import lombok.Value;
 
 @Value
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class SculptureRequestModel {
     private String galleryId;
     private String title;

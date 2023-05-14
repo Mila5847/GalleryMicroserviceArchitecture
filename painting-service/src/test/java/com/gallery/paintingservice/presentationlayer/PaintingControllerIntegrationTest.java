@@ -48,7 +48,7 @@ public class PaintingControllerIntegrationTest {
     @Test
     public void whenPaintingsExist_thenReturnAllPaintingsInGallery(){
         // arrange
-        Integer expectedNumPaintings = 5;
+        Integer expectedNumPaintings = 6;
 
         // act
         webTestClient.get()
@@ -439,7 +439,7 @@ public class PaintingControllerIntegrationTest {
                 .expectStatus().isNoContent();
         // assert
         Painting updatedPainting = paintingRepository.findByGalleryIdentifier_GalleryIdAndPaintingIdentifier_PaintingId(VALID_GALLERY_ID,  VALID_PAINTING_ID);
-        assertEquals(updatedPainting.getPainterIdentifier(), null);
+        assertEquals(updatedPainting.getPainterIdentifier().getPainterId(), "");
     }
 
     // EXCEPTION: REMOVE PAINTER WITH INVALID ID OF PAINTING

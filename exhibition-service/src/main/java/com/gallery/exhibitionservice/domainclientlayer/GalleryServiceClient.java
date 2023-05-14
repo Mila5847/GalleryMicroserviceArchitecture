@@ -97,17 +97,17 @@ public class GalleryServiceClient {
         }
     }
 
-    private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
-        if (ex.getStatusCode() == NOT_FOUND) {
-            return new NotFoundException(getErrorMessage(ex));
-        }
-        if (ex.getStatusCode() == UNPROCESSABLE_ENTITY) {
-            return new InvalidInputException(getErrorMessage(ex));
-        }
-        log.warn("Got a unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
-        log.warn("Error body: {}", ex.getResponseBodyAsString());
-        return ex;
+private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
+    if (ex.getStatusCode() == NOT_FOUND) {
+        return new NotFoundException(getErrorMessage(ex));
     }
+    if (ex.getStatusCode() == UNPROCESSABLE_ENTITY) {
+        return new InvalidInputException(getErrorMessage(ex));
+    }
+    log.warn("Got a unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
+    log.warn("Error body: {}", ex.getResponseBodyAsString());
+    return ex;
+}
     private String getErrorMessage(HttpClientErrorException ex) {
         try {
             return objectMapper.readValue(ex.getResponseBodyAsString(), HttpErrorInfo.class).getMessage();

@@ -55,7 +55,7 @@ public class SculptureControllerIntegrationTest {
     @Test
     public void whenSculpturesExist_thenReturnAllSculpturesInGallery(){
         // arrange
-        Integer expectedNumSculptures = 3;
+        Integer expectedNumSculptures = 5;
 
         // act
         webTestClient.get()

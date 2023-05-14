@@ -34,9 +34,9 @@ public class ExhibitionController {
     }
 
     @PutMapping("/{exhibitionId}")
-    ResponseEntity<Void> updateExhibition(@PathVariable String exhibitionId, @RequestBody ExhibitionRequestModel exhibitionRequestModel){
+    ResponseEntity<ExhibitionResponseModel> updateExhibition(@PathVariable String exhibitionId, @RequestBody ExhibitionRequestModel exhibitionRequestModel){
         exhibitionService.updateExhibition(exhibitionId, exhibitionRequestModel);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{exhibitionId}")

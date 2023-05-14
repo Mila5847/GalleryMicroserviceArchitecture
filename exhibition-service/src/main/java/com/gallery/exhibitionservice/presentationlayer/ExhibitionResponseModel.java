@@ -2,10 +2,7 @@ package com.gallery.exhibitionservice.presentationlayer;
 
 import com.gallery.exhibitionservice.domainclientlayer.PaintingResponseModel;
 import com.gallery.exhibitionservice.domainclientlayer.SculptureResponseModel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@Builder
 public class ExhibitionResponseModel {
 
     private String exhibitionId;

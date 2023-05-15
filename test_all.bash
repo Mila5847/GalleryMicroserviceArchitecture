@@ -130,6 +130,17 @@ function recreateExhibitionAggregate() {
     echo "Added Exhibition Aggregate with exhibitionId: ${allTestExhibitionsIds[$testId]}"
 }
 
+function recreateGallery() {
+    local testId=$1
+    local aggregate=$2
+
+    #create the gallery aggregates and record the generated galleryIds
+    galleryId=$(curl -X POST http://$HOST:$PORT/api/v1/galleries -H "Content-Type:
+    application/json" --data "$aggregate" | jq '.galleryId')
+    allTestGalleryIds[$testId]=$galleryId
+    echo "Added Gallery Aggregate with galleryId: ${allTestGalleryIds[$testId]}"
+}
+
 #don't start testing until all the microservices are up and running
 function waitForService() {
     # shellcheck disable=SC2124
@@ -173,10 +184,94 @@ waitForService curl -X DELETE http://$HOST:$PORT/api/v1/exhibitions
 setupTestdata
 
 #EXECUTE EXPLICIT TESTS AND VALIDATE RESPONSE
+## Verify that a normal get by id of earlier posted gallery works
+echo -e "\nTest 1: Verify that a normal get by id of earlier posted gallery works"
+assertCurl 200 "curl http://$HOST:$PORT/api/v1/galleries/${allTestGalleryIds[1]} -s"
+assertEqual ${allTestGalleryIds[1]} $(echo $RESPONSE | jq .galleryId)
 #
-## Verify that a normal get by id of earlier posted purchase order works
-echo -e "\nTest 1: Verify that a normal get by id of earlier posted purchase order works"
+
+## Verify that a normal post of gallery works
+echo -e "\nTest 2: Verify that a normal post of gallery works"
+assertCurl 201 "curl -X POST http://$HOST:$PORT/api/v1/galleries -H \"Content-Type: application/json\" --data '{ \"name\": \"Art\", \"openFrom\": \"Thursday\", \"openUntil\": \"Sunday\", \"streetAddress\": \"797 rue perroer \", \"city\": \"Brossarf\", \"province\": \"Quebec\", \"country\": \"Canada\", \"postalCode\": \"J4W1W6\" }' -s"
+assertEqual "\"Art\"" $(echo $RESPONSE | jq .name)
+assertEqual "\"Thursday\"" $(echo $RESPONSE | jq .openFrom)
+assertEqual "\"Sunday\"" $(echo $RESPONSE | jq .openUntil)
+#
+
+## Verify that a normal get by id of earlier posted exhibition works
+echo -e "\nTest 4: Verify that a normal get by id of earlier posted exhibition works"
 assertCurl 200 "curl http://$HOST:$PORT/api/v1/exhibitions/${allTestExhibitionsIds[1]} -s"
+assertEqual ${allTestExhibitionsIds[1]} $(echo $RESPONSE | jq .exhibitionId)
+#
+
+## Verify that a normal put of exhibition works
+echo -e "\nTest 5: Verify that a normal put of exhibition works"
+assertCurl 200 "curl -X PUT http://$HOST:$PORT/api/v1/exhibitions/${allTestExhibitionsIds[1]} -H \"Content-Type: application/json\" --data '{ \"exhibitionName\": \"exhibition1\",
+                                                                                                                                                  \"roomNumber\" : 240, \"duration\" : 120,
+                                                                                                                                                  \"startDay\": \"Monday\", \"endDay\": \"Wednesday\",
+                                                                                                                                                  \"paintings\":
+                                                                                                                                                  [ { \"paintingId\": \"6ae9eaf7-5ec4-45da-a85d-45a317e711a0\",
+                                                                                                                                                  \"title\": \"The Two Fridas\", \"yearCreated\": 1939,
+                                                                                                                                                  \"painterId\": \"0e1482bb-67a8-4620-842b-3
+                                                                                                                                                  1b0a4c9f7a\" } ],
+                                                                                                                                                  \"sculptures\":
+                                                                                                                                                  [ { \"sculptureId\": \"29e803f5-c8aa-475c-832e-8edbb2336778\",
+                                                                                                                                                  \"title\": \"Torso\", \"material\": \"Clay\",
+                                                                                                                                                  \"texture\": \"Rough\", \"galleryId\": \"ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8\" } ] }' -s"
+assertEqual "\"exhibition1\"" $(echo $RESPONSE | jq .exhibitionName)
+assertEqual 240 $(echo $RESPONSE | jq .roomNumber)
+assertEqual 120 $(echo $RESPONSE | jq .duration)
+
+## Verify that a normal post of exhibition works
+echo -e "\nTest 5: Verify that a normal post of exhibition works"
+assertCurl 201 "curl -X POST http://$HOST:$PORT/api/v1/exhibitions/galleries/ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8 -H \"Content-Type: application/json\" --data '{ \"exhibitionName\": \"exhibition1\",
+                                                                                                                                                  \"roomNumber\" : 240, \"duration\" : 120,
+                                                                                                                                                  \"startDay\": \"Monday\", \"endDay\": \"Wednesday\",
+                                                                                                                                                  \"paintings\":
+                                                                                                                                                  [ { \"paintingId\": \"6ae9eaf7-5ec4-45da-a85d-45a317e711a0\",
+                                                                                                                                                  \"title\": \"The Two Fridas\", \"yearCreated\": 1939,
+                                                                                                                                                  \"painterId\": \"0e1482bb-67a8-4620-842b-3f7bfb7ee175\",
+                                                                                                                                                  \"galleryId\": \"ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8\" },
+                                                                                                                                                  { \"paintingId\": \"d2d6b05f-9cfb-4a54-ba3e-57dffe0fd5c0\",
+                                                                                                                                                  \"title\": \"Mona Lisa\", \"yearCreated\": 1506, \"painterId\":
+                                                                                                                                                  \"ede04dc9-9cf9-4191-8b4e-7d91234cb49c\", \"galleryId\": \"ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8\" }
+                                                                                                                                                  ], \"sculptures\": [ { \"sculptureId\": \"2872b8a2-e691-4115-891c-bed7187392d1\", \"title\": \"Hand\",
+                                                                                                                                                  \"material\": \"Clay\", \"texture\": \"Bumpy\", \"galleryId\": \"ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8\" },
+                                                                                                                                                  {\"sculptureId\": \"29e803f5-c8aa-475c-832e-8edbb2336770\", \"title\": \"Torso\", \"material\": \"Clay\",
+                                                                                                                                                  \"texture\": \"Rough\", \"galleryId\": \"ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8\" } ] }' -s"
+assertEqual "\"exhibition1\"" $(echo $RESPONSE | jq .exhibitionName)
+assertEqual 240 $(echo $RESPONSE | jq .roomNumber)
+assertEqual 120 $(echo $RESPONSE | jq .duration)
+assertEqual "\"Monday\"" $(echo $RESPONSE | jq .startDay)
+assertEqual "\"Wednesday\"" $(echo $RESPONSE | jq .endDay)
+#
+
+## Verify that a normal get all exhibitions works
+echo -e "\nTest 4: Verify that a normal get all exhibitions works"
+assertCurl 200 "curl http://$HOST:$PORT/api/v1/exhibitions -s"
+assertEqual 2 $(echo $RESPONSE | jq '. | length')
+#
+
+## Verify that a normal put of exhibition works
+echo -e "\nTest 5: Verify that a normal put of exhibition works"
+body=\
+'{ "exhibitionName": "UpdatedExhibition",
+"roomNumber" : 213, "duration" : 120,
+"startDay": "Monday", "endDay": "Wednesday",
+"paintings":
+[ { "paintingId": "6ae9eaf7-5ec4-45da-a85d-45a317e711a2",
+"title": "The Two Fridas", "yearCreated": 1939,
+"painterId": "0e1482bb-67a8-4620-842b-3f7bfb7ee175",
+"galleryId": "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8" },
+{ "paintingId": "d2d6b05f-9cfb-4a54-ba3e-57dffe0fd5c6",
+"title": "Mona Lisa", "yearCreated": 1506, "painterId":
+"ede04dc9-9cf9-4191-8b4e-7d91234cb49c", "galleryId": "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8" }
+], "sculptures": [ { "sculptureId": "2872b8a2-e691-4115-891c-bed7187392d0", "title": "Hand",
+"material": "Clay", "texture": "Bumpy", "galleryId": "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8" },
+{"sculptureId": "29e803f5-c8aa-475c-832e-8edbb2336778", "title": "Torso", "material": "Clay",
+"texture": "Rough", "galleryId": "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8" } ] }'
+assertCurl 200 "curl -X PUT http://$HOST:$PORT/api/v1/exhibitions/${allTestExhibitionsIds[1]} -H \"Content-Type: application/json\" -d '${body}' -s"
+# shellcheck disable=SC2046
 assertEqual ${allTestExhibitionsIds[1]} $(echo $RESPONSE | jq .exhibitionId)
 #
 # shellcheck disable=SC2199

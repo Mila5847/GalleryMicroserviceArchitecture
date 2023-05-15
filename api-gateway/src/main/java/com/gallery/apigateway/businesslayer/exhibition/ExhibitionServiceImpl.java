@@ -42,4 +42,9 @@ public class ExhibitionServiceImpl implements ExhibitionService{
     public void removeExhibition(String exhibitionId) {
         exhibitionServiceClient.removeExhibition(exhibitionId);
     }
+
+    @Override
+    public void removeAllExhibitions() {
+        exhibitionServiceClient.removeAllExhibitions();
+    }
 }

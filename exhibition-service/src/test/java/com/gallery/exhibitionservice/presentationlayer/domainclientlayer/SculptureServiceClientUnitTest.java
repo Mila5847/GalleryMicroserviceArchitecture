@@ -6,10 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class SculptureServiceClientUnitTest {
 
@@ -54,6 +56,16 @@ public class SculptureServiceClientUnitTest {
     }
 
     @Test
+    void getAllSculptures_ThrowsException() {
+        String galleryId = "1";
+
+            when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures", SculptureResponseModel[].class))
+                    .thenThrow(new HttpClientErrorException(NOT_FOUND));
+
+        assertThrows(NullPointerException.class, () -> sculptureServiceClient.getAllSculpturesInGallery(galleryId));
+    }
+
+    @Test
     void getSculptureReturnsSculpture() {
         String sculptureId = "1";
         SculptureResponseModel expectedSculptureResponseModel = SculptureResponseModel.builder()
@@ -68,6 +80,17 @@ public class SculptureServiceClientUnitTest {
 
         SculptureResponseModel actualSculptureResponseModel = sculptureServiceClient.getSculptureById("1", sculptureId);
         assertEquals(expectedSculptureResponseModel, actualSculptureResponseModel);
+    }
+
+    @Test
+    void getSculpture_ThrowsException() {
+        String galleryId = "1";
+        String sculptureId = "123";
+
+        when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId, SculptureResponseModel.class))
+                .thenThrow(new HttpClientErrorException(NOT_FOUND));
+
+        assertThrows(NullPointerException.class, () -> sculptureServiceClient.getSculptureById(galleryId, sculptureId));
     }
 
     @Test
@@ -93,6 +116,21 @@ public class SculptureServiceClientUnitTest {
     }
 
     @Test
+    void addSculpture_ThrowsException() {
+        String galleryId = "1";
+        SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
+                .title("Title 1")
+                .texture("Texture 1")
+                .material("Material 1")
+                .build();
+
+        when(restTemplate.postForObject(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures", sculptureRequestModel, SculptureResponseModel.class))
+                .thenThrow(new HttpClientErrorException(NOT_FOUND));
+
+        assertThrows(NullPointerException.class, () -> sculptureServiceClient.addSculptureInGallery(galleryId, sculptureRequestModel));
+    }
+
+    @Test
     void updateSculptureReturnsSculpture() {
         String galleryId = "1";
         String sculptureId = "123";
@@ -103,8 +141,22 @@ public class SculptureServiceClientUnitTest {
                 .build();
 
         sculptureServiceClient.updateSculptureInGallery(galleryId, sculptureId, sculptureRequestModel);
-        Mockito.verify(restTemplate).put(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId, sculptureRequestModel);
         assertDoesNotThrow(() -> sculptureServiceClient.updateSculptureInGallery(galleryId, sculptureId, sculptureRequestModel));
+    }
+
+    @Test
+    void updateSculpture_ThrowsException() {
+        String galleryId = "1";
+        String sculptureId = "123";
+        SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
+                .title("Title 1")
+                .texture("Texture 1")
+                .material("Material 1")
+                .build();
+
+        doThrow(new HttpClientErrorException(NOT_FOUND))
+                .when(restTemplate).put(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId, sculptureRequestModel);
+        assertThrows(NullPointerException.class, () -> sculptureServiceClient.updateSculptureInGallery(galleryId, sculptureId, sculptureRequestModel));
     }
 
     @Test
@@ -112,9 +164,33 @@ public class SculptureServiceClientUnitTest {
         String galleryId = "1";
         String sculptureId = "123";
 
-        sculptureServiceClient.deleteSculpture(galleryId, sculptureId);
-        Mockito.verify(restTemplate).delete(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId);
+        SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
+                .title("Title 1")
+                .texture("Texture 1")
+                .material("Material 1")
+                .build();
+        SculptureResponseModel sculptureResponseModel = SculptureResponseModel.builder()
+                .sculptureId(sculptureId)
+                .title("Title 1")
+                .texture("Texture 1")
+                .material("Material 1")
+                .build();
+
+        when(sculptureServiceClient.addSculptureInGallery(galleryId, sculptureRequestModel))
+                .thenReturn(sculptureResponseModel);
         assertDoesNotThrow(() -> sculptureServiceClient.deleteSculpture(galleryId, sculptureId));
+        assertTrue(sculptureServiceClient.getSculptureById(galleryId, sculptureId) == null);
+        Mockito.verify(restTemplate).delete(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId);
+    }
+
+    @Test
+    void deleteSculpture_ThrowsException() {
+        String galleryId = "1";
+        String sculptureId = "123";
+
+        doThrow(new HttpClientErrorException(NOT_FOUND))
+                .when(restTemplate).delete(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId);
+        assertThrows(NullPointerException.class, () -> sculptureServiceClient.deleteSculpture(galleryId, sculptureId));
     }
 
 

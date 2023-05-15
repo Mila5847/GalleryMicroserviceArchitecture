@@ -31,14 +31,20 @@ public class ExhibitionController {
     }
 
     @PutMapping("/{exhibitionId}")
-    ResponseEntity<Void> updateExhibition(@PathVariable String exhibitionId, @RequestBody ExhibitionRequestModel exhibitionRequestModel) {
+    ResponseEntity<ExhibitionResponseModel> updateExhibition(@PathVariable String exhibitionId, @RequestBody ExhibitionRequestModel exhibitionRequestModel) {
         exhibitionService.updateExhibition(exhibitionId, exhibitionRequestModel);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{exhibitionId}")
     ResponseEntity<Void> deleteExhibition(@PathVariable String exhibitionId) {
         exhibitionService.removeExhibition(exhibitionId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping
+    ResponseEntity<Void> deleteAllExhibitions() {
+        exhibitionService.removeAllExhibitions();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

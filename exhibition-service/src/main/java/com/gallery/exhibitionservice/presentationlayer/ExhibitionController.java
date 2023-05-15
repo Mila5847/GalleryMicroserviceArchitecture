@@ -44,4 +44,10 @@ public class ExhibitionController {
         exhibitionService.removeExhibition(exhibitionId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @DeleteMapping
+    ResponseEntity<Void> deleteAllExhibitions(){
+        exhibitionService.removeAllExhibitions();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

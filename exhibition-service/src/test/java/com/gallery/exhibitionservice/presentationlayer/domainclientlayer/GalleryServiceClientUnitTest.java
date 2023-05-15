@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gallery.exhibitionservice.domainclientlayer.GalleryRequestModel;
 import com.gallery.exhibitionservice.domainclientlayer.GalleryResponseModel;
 import com.gallery.exhibitionservice.domainclientlayer.GalleryServiceClient;
+import com.gallery.exhibitionservice.utils.HttpErrorInfo;
 import com.gallery.exhibitionservice.utils.exceptions.InvalidInputException;
 import com.gallery.exhibitionservice.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -59,17 +62,34 @@ public class GalleryServiceClientUnitTest {
         assertArrayEquals(expectedGalleryResponseModels, actualGalleryResponseModels);
     }
 
-        @Test
-        void getGalleryReturnsGallery() {
-            String galleryId = "1";
-            GalleryResponseModel expectedGalleryResponseModel = GalleryResponseModel.builder().build();
+    @Test
+    void getAllGalleries_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        when(restTemplate.getForObject(GALLERY_SERVICE_BASE_URL, GalleryResponseModel[].class))
+                .thenThrow(new HttpClientErrorException(NOT_FOUND));
 
-            when(restTemplate.getForObject(GALLERY_SERVICE_BASE_URL + "/" + galleryId, GalleryResponseModel.class))
-                    .thenReturn(expectedGalleryResponseModel);
+        assertThrows(NullPointerException.class, () -> galleryServiceClient.getAllGalleries());
+    }
 
-            GalleryResponseModel actualGalleryResponseModel = galleryServiceClient.getGallery(galleryId);
-            assertEquals(expectedGalleryResponseModel, actualGalleryResponseModel);
-        }
+    @Test
+    void getGalleryReturnsGallery() {
+        String galleryId = "1";
+        GalleryResponseModel expectedGalleryResponseModel = GalleryResponseModel.builder().build();
+
+        when(restTemplate.getForObject(GALLERY_SERVICE_BASE_URL + "/" + galleryId, GalleryResponseModel.class))
+                .thenReturn(expectedGalleryResponseModel);
+
+        GalleryResponseModel actualGalleryResponseModel = galleryServiceClient.getGallery(galleryId);
+        assertEquals(expectedGalleryResponseModel, actualGalleryResponseModel);
+    }
+
+    @Test
+    void getGallery_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String galleryId = "1";
+        when(restTemplate.getForObject(GALLERY_SERVICE_BASE_URL + "/" + galleryId, GalleryResponseModel.class))
+                .thenThrow(new HttpClientErrorException(NOT_FOUND));
+
+        assertThrows(NullPointerException.class, () -> galleryServiceClient.getGallery(galleryId));
+    }
 
         @Test
         void addGalleryReturnsGallery() {
@@ -101,6 +121,15 @@ public class GalleryServiceClientUnitTest {
         }
 
         @Test
+        void addGallery_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+            GalleryRequestModel galleryRequestModel = buildGalleryRequestModel();
+            when(restTemplate.postForObject(GALLERY_SERVICE_BASE_URL, galleryRequestModel, GalleryResponseModel.class))
+                    .thenThrow(new HttpClientErrorException(UNPROCESSABLE_ENTITY));
+
+            assertThrows(NullPointerException.class, () -> galleryServiceClient.addGallery(galleryRequestModel));
+        }
+
+        @Test
         void updateGalleryDoesNotThrowException() {
             String galleryId = "1";
             GalleryRequestModel galleryRequestModel = buildGalleryRequestModel();
@@ -109,10 +138,40 @@ public class GalleryServiceClientUnitTest {
         }
 
         @Test
+        void updateGallery_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+            // Mock the RestTemplate to throw an HttpClientErrorException
+            HttpStatus errorStatus = HttpStatus.NOT_FOUND;
+            HttpClientErrorException exception = new HttpClientErrorException(errorStatus);
+            Mockito.doThrow(exception).when(restTemplate).put(Mockito.anyString(), Mockito.any(GalleryRequestModel.class));
+
+            // Create a mock GalleryRequestModel
+            GalleryRequestModel galleryRequestModel = buildGalleryRequestModel();
+
+            // Call the updateGallery method and expect an exception to be thrown
+            assertThrows(NullPointerException.class, () -> {
+                galleryServiceClient.updateGallery("1", galleryRequestModel);
+            });
+        }
+
+        @Test
         void deleteGalleryDoesNotThrowException() {
             String galleryId = "1";
 
             assertDoesNotThrow(() -> galleryServiceClient.deleteGallery(galleryId));
+            Mockito.verify(restTemplate).delete(GALLERY_SERVICE_BASE_URL + "/" + galleryId);
+        }
+
+        @Test
+        void deleteGallery_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+            // Mock the RestTemplate to throw an HttpClientErrorException
+            HttpStatus errorStatus = HttpStatus.NOT_FOUND;
+            HttpClientErrorException exception = new HttpClientErrorException(errorStatus);
+            Mockito.doThrow(exception).when(restTemplate).delete(Mockito.anyString());
+
+            // Call the deleteGallery method and expect an exception to be thrown
+            assertThrows(NullPointerException.class, () -> {
+                galleryServiceClient.deleteGallery("1");
+            });
         }
 
     private GalleryRequestModel buildGalleryRequestModel() {

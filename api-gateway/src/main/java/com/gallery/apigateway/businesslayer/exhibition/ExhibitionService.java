@@ -14,6 +14,8 @@ public interface ExhibitionService {
     ExhibitionResponseModel updateExhibition(String exhibitionId, ExhibitionRequestModel exhibitionRequestModel);
     void removeExhibition(String exhibitionId);
 
+    void removeAllExhibitions();
+
     /*GalleryExhibitionPaintingSculptureResponseModel getExhibitionByIdInGallery(String galleryId, String exhibitionId);
     GalleryExhibitionPaintingSculptureResponseModel getExhibitionByField(String galleryId, Map<String, String> queryParams);
    // GalleryExhibitionPaintingResponseModel addExhibitionToGallery(String galleryId, ExhibitionRequestModel exhibitionRequestModel);

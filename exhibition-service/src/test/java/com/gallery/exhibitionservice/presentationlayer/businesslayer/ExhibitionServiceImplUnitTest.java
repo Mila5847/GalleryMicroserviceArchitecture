@@ -591,6 +591,15 @@ public class ExhibitionServiceImplUnitTest {
         });
     }
 
+    // Delete All Exhibitions
+    @Test
+    void whenValid_deleteAllExhibitions() {
+        exhibitionService.removeAllExhibitions();
+        verify(exhibitionRepository, times(1)).deleteAll();
+
+        assertEquals(0, exhibitionRepository.count());
+    }
+
 
     private Exhibition buildExhibition(){
         ExhibitionIdentifier exhibitionIdentifier = new ExhibitionIdentifier();

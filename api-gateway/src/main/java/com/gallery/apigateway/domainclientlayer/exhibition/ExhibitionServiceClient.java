@@ -107,6 +107,15 @@ public class ExhibitionServiceClient {
         }
     }
 
+    public void removeAllExhibitions() {
+        try {
+            String url = EXHIBITION_SERVICE_BASE_URL;
+            restTemplate.delete(url);
+        } catch (HttpClientErrorException ex) {
+            throw handleHttpClientException(ex);
+        }
+    }
+
     private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
         if (ex.getStatusCode() == NOT_FOUND) {
             return new NotFoundException(getErrorMessage(ex));

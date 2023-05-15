@@ -163,4 +163,9 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         exhibitionRepository.delete(exhibition);
     }
 
+    @Override
+    public void removeAllExhibitions() {
+        exhibitionRepository.deleteAll();
+    }
+
 }

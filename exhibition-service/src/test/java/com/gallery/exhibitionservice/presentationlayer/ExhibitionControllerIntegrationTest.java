@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gallery.exhibitionservice.datalayer.Exhibition;
 import com.gallery.exhibitionservice.domainclientlayer.GalleryResponseModel;
 import com.gallery.exhibitionservice.domainclientlayer.PaintingResponseModel;
+import com.gallery.exhibitionservice.domainclientlayer.SculptureRequestModel;
 import com.gallery.exhibitionservice.domainclientlayer.SculptureResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -51,327 +53,157 @@ class ExhibitionControllerIntegrationTest {
     // GET ALL EXHIBITIONS
     @Test
     public void whenGetAllExhibitions_thenReturnAllExhibitions() throws JsonProcessingException, URISyntaxException {
-        GalleryResponseModel galleryResponseModel = GalleryResponseModel.builder()
-                .galleryId("23456")
-                .name("Quebec's Gallery")
-                .openFrom("Wednesday 12:00 AM")
-                .openUntil("Sunday 6:00 PM")
-                .city("Brossard")
-                .province("Quebec")
-                .country("Canada")
-                .postalCode("J4W 1W6")
-                .build();
-
-        PaintingResponseModel paintingResponseModel = PaintingResponseModel.builder()
-                .paintingId("111111")
-                .title("Painting 1")
-                .yearCreated(2020)
-                .painterId("111112")
-                .galleryId("23456")
-                .build();
-        PaintingResponseModel paintingResponseModel2 = PaintingResponseModel.builder()
-                .paintingId("222222")
-                .title("Painting 1")
-                .yearCreated(2020)
-                .painterId("111112")
-                .galleryId("23456")
-                .build();
-        List<PaintingResponseModel> paintings = new ArrayList<>(Arrays.asList(paintingResponseModel, paintingResponseModel2));
-
-        SculptureResponseModel sculptureResponseModel = SculptureResponseModel.builder()
-                .sculptureId("333333")
-                .title("Sculpture 1")
-                .material("Wood")
-                .texture("Smooth")
-                .galleryId("23456")
-                .build();
-
-        List<SculptureResponseModel> sculptures = new ArrayList<>(Arrays.asList(sculptureResponseModel));
-
-        ExhibitionRequestModel exhibitionRequestModel = ExhibitionRequestModel.builder()
-                .exhibitionName("Exhibition 1")
-                .roomNumber(123)
-                .duration(120)
-                .startDay("Monday")
-                .endDay("Saturday")
-                .paintings(paintings)
-                .sculptures(sculptures)
-                .build();
-
+        PaintingResponseModel painting1 = new PaintingResponseModel("3ed9654a-b773-4aa0-ae6b-b22afb636c8e", "The Starry Night", 1889, "4c80444-5acf-4d57-8902-9f55255e9e55", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8");
+        PaintingResponseModel painting2 = new PaintingResponseModel("b5fff508-79d2-4fdc-aecf-5a7b504f9fcc", "Sunflowers", 1888, "4c80444-5acf-4d57-8902-9f55255e9e55", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8");
+        SculptureResponseModel sculpture1 = new SculptureResponseModel("acf18748-b00c-4f3a-9d0b-b1b1fdf9c240", "Vase", "Wood", "Rough", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8");
+        SculptureResponseModel sculpture2 = new SculptureResponseModel("04875097-6dab-451c-b08d-b1e48da9ded8", "Face", "Stone", "Smooth", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8");
         mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7001/api/v1/galleries/23456")))
+                requestTo(new URI("http://localhost:7001/api/v1/exhibitions")))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withStatus(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapper.writeValueAsString(galleryResponseModel)));
+                        .body(mapper.writeValueAsString(Arrays.asList(
+                                new ExhibitionResponseModel("5ea10d1d-46fb-4374-a39c-27d643aa37e3", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8", "Art Gallery of Ontario", "Ontario's Exhibition", 203, 60, "Monday", "Wednesday",
+                                        Arrays.asList(painting1, painting2), Arrays.asList(sculpture1, sculpture2))))));
 
-        mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7002/api/v1/23456/paintings/111111")))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapper.writeValueAsString(paintingResponseModel)));
-
-        mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7002/api/v1/23456/paintings/222222")))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapper.writeValueAsString(paintingResponseModel2)));
-
-
-        mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7003/api/v1/23456/sculptures/333333")))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapper.writeValueAsString(sculptureResponseModel)));
-
-        String url1 = "/api/v1/exhibitions/galleries/23456";
-        webTestClient.post().uri(url1)
-                .bodyValue(exhibitionRequestModel)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody(Exhibition.class);
-
-        String url2 = "/api/v1/exhibitions";
-        webTestClient.get().uri(url2)
+        String url = "/api/v1/exhibitions";
+        webTestClient.get().uri(url)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Exhibition.class)
-                .hasSize(2)
+                .expectBodyList(ExhibitionResponseModel.class)
                 .value(responseModels -> {
                     responseModels.forEach(rsp -> {
-                                assertThat(rsp.getExhibitionName()).isIn("Ontario's Exhibition", "Exhibition 1");
-                                assertThat(rsp.getRoomNumber()).isIn(203, 123);
-                                assertThat(rsp.getDuration()).isIn(60, 120);
-                                assertThat(rsp.getStartDay()).isIn("Monday", "Monday");
-                                assertThat(rsp.getEndDay()).isIn("Wednesday", "Saturday");
+                                assertThat(rsp.getExhibitionId()).isNotNull();
+                                assertThat(rsp.getExhibitionName()).isEqualTo("Ontario's Exhibition");
+                                assertThat(rsp.getRoomNumber()).isEqualTo(203);
+                                assertThat(rsp.getDuration()).isEqualTo(60);
+                                assertThat(rsp.getStartDay()).isEqualTo("Monday");
+                                assertThat(rsp.getEndDay()).isEqualTo("Wednesday");
+                                assertThat(rsp.getPaintings()).isNotNull();
+                                assertThat(rsp.getSculptures()).isNotNull();
+                                assertThat(rsp.getPaintings().size()).isEqualTo(2);
+                                assertThat(rsp.getSculptures().size()).isEqualTo(2);
                             }
-                        );
-                    });
+                    );
+                });
     }
 
     // GET EXHIBITION BY ID
     @Test
-    public void whenValidExhibitionId_thenExhibitionShouldBeFound() throws JsonProcessingException, URISyntaxException {
-        String url2 = "/api/v1/exhibitions/5ea10d1d-46fb-4374-a39c-27d643aa37e3" ;
-        webTestClient.get().uri(url2)
+    public void whenGetExhibitionById_thenReturnExhibition() throws JsonProcessingException, URISyntaxException {
+        mockRestServiceServer.expect(ExpectedCount.once(),
+                requestTo(new URI("http://localhost:7004/api/v1/exhibitions/5ea10d1d-46fb-4374-a39c-27d643aa37e3")))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(mapper.writeValueAsString(new ExhibitionResponseModel("5ea10d1d-46fb-4374-a39c-27d643aa37e3", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8", "Art Gallery of Ontario", "Ontario's Exhibition", 203, 60, "Monday", "Wednesday",
+                                Arrays.asList(new PaintingResponseModel("3ed9654a-b773-4aa0-ae6b-b22afb636c8e", "The Starry Night", 1889, "4c80444-5acf-4d57-8902-9f55255e9e55", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8"),
+                                        new PaintingResponseModel("b5fff508-79d2-4fdc-aecf-5a7b504f9fcc", "Sunflowers", 1888, "4c80444-5acf-4d57-8902-9f55255e9e55", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8")),
+                                Arrays.asList(new SculptureResponseModel("acf18748-b00c-4f3a-9d0b-b1b1fdf9c240", "Vase", "Wood", "Rough", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8"),
+                                        new SculptureResponseModel("04875097-6dab-451c-b08d-b1e48da9ded8", "Face", "Stone", "Smooth", "ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8"))))));
+
+
+        String url = "/api/v1/exhibitions/5ea10d1d-46fb-4374-a39c-27d643aa37e3";
+        webTestClient.get().uri(url)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Exhibition.class)
-                .hasSize(1)
-                .value(responseModels -> {
-            responseModels.forEach(rsp -> {
-                        assertThat(rsp.getExhibitionName()).isEqualTo("Ontario's Exhibition");
-                        assertThat(rsp.getRoomNumber()).isEqualTo(203);
-                        assertThat(rsp.getDuration()).isEqualTo(60);
-                        assertThat(rsp.getStartDay()).isEqualTo("Monday");
-                        assertThat(rsp.getEndDay()).isEqualTo("Wednesday");
-                    }
-            );
-        });
-    }
-
-
-    // POST EXHIBITION
-    @Test
-    public void whenGalleryAndPaintingsAndSculpturesAreValid_thenCreateExhibition() throws JsonProcessingException, URISyntaxException {
-        // arrange
-        GalleryResponseModel galleryResponseModel = GalleryResponseModel.builder()
-                .galleryId("23456")
-                .name("Quebec's Gallery")
-                .openFrom("Wednesday 12:00 AM")
-                .openUntil("Sunday 6:00 PM")
-                .city("Brossard")
-                .province("Quebec")
-                .country("Canada")
-                .postalCode("J4W 1W6")
-                .build();
-
-        PaintingResponseModel paintingResponseModel = PaintingResponseModel.builder()
-                .paintingId("12341")
-                .title("Painting 1")
-                .yearCreated(2020)
-                .painterId("12345")
-                .galleryId("23456")
-                .build();
-        PaintingResponseModel paintingResponseModel2 = PaintingResponseModel.builder()
-                .paintingId("12342")
-                .title("Painting 1")
-                .yearCreated(2020)
-                .painterId("12345")
-                .galleryId("23456")
-                .build();
-        List<PaintingResponseModel> paintings = new ArrayList<>(Arrays.asList(paintingResponseModel, paintingResponseModel2));
-
-        SculptureResponseModel sculptureResponseModel = SculptureResponseModel.builder()
-                .sculptureId("12345")
-                .title("Sculpture 1")
-                .material("Wood")
-                .texture("Smooth")
-                .galleryId("23456")
-                .build();
-
-        List<SculptureResponseModel> sculptures = new ArrayList<>(Arrays.asList(sculptureResponseModel));
-
-        ExhibitionRequestModel exhibitionRequestModel = ExhibitionRequestModel.builder()
-                .exhibitionName("Exhibition 1")
-                .roomNumber(123)
-                .duration(120)
-                .startDay("Monday")
-                .endDay("Saturday")
-                .paintings(paintings)
-                .sculptures(sculptures)
-                .build();
-
-        mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7001/api/v1/galleries/23456")))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapper.writeValueAsString(galleryResponseModel)));
-
-        mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7002/api/v1/23456/paintings/111111")))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapper.writeValueAsString(paintingResponseModel)));
-
-        mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7002/api/v1/23456/paintings/222222")))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapper.writeValueAsString(paintingResponseModel2)));
-
-
-        mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7003/api/v1/23456/sculptures/333333")))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapper.writeValueAsString(sculptureResponseModel)));
-
-
-        String url1 = "/api/v1/exhibitions/galleries/23456";
-        webTestClient.post()
-                .uri(url1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(exhibitionRequestModel)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(ExhibitionResponseModel.class)
-                .value(response -> {
-                    assertEquals(exhibitionRequestModel.getExhibitionName(), response.getExhibitionName());
-                    assertEquals(exhibitionRequestModel.getRoomNumber(), response.getRoomNumber());
-                    assertEquals(exhibitionRequestModel.getDuration(), response.getDuration());
-                    assertEquals(exhibitionRequestModel.getStartDay(), response.getStartDay());
-                    assertEquals(exhibitionRequestModel.getEndDay(), response.getEndDay());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(0).getPaintingId(), response.getPaintings().get(0).getPaintingId());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(0).getTitle(), response.getPaintings().get(0).getTitle());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(0).getYearCreated(), response.getPaintings().get(0).getYearCreated());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(0).getPainterId(), response.getPaintings().get(0).getPainterId());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(0).getGalleryId(), response.getPaintings().get(0).getGalleryId());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(1).getPaintingId(), response.getPaintings().get(1).getPaintingId());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(1).getTitle(), response.getPaintings().get(1).getTitle());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(1).getYearCreated(), response.getPaintings().get(1).getYearCreated());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(1).getPainterId(), response.getPaintings().get(1).getPainterId());
-                    assertEquals(exhibitionRequestModel.getPaintings().get(1).getGalleryId(), response.getPaintings().get(1).getGalleryId());
-                    assertEquals(exhibitionRequestModel.getSculptures().get(0).getSculptureId(), response.getSculptures().get(0).getSculptureId());
-                    assertEquals(exhibitionRequestModel.getSculptures().get(0).getTitle(), response.getSculptures().get(0).getTitle());
-                    assertEquals(exhibitionRequestModel.getSculptures().get(0).getMaterial(), response.getSculptures().get(0).getMaterial());
-                    assertEquals(exhibitionRequestModel.getSculptures().get(0).getTexture(), response.getSculptures().get(0).getTexture());
-                    assertEquals(exhibitionRequestModel.getSculptures().get(0).getGalleryId(), response.getSculptures().get(0).getGalleryId());
+                .value(responseModel -> {
+                    assertThat(responseModel.getExhibitionId()).isNotNull();
+                    assertThat(responseModel.getExhibitionName()).isEqualTo("Ontario's Exhibition");
+                    assertThat(responseModel.getRoomNumber()).isEqualTo(203);
+                    assertThat(responseModel.getDuration()).isEqualTo(60);
+                    assertThat(responseModel.getStartDay()).isEqualTo("Monday");
+                    assertThat(responseModel.getEndDay()).isEqualTo("Wednesday");
+                    assertThat(responseModel.getPaintings()).isNotNull();
+                    assertThat(responseModel.getSculptures()).isNotNull();
+                    assertThat(responseModel.getPaintings().size()).isEqualTo(2);
+                    assertThat(responseModel.getSculptures().size()).isEqualTo(2);
                 });
     }
 
-    // UPDATE EXHIBITION
-    /*@Test
-    public void whenExhibitionIsValid_thenUpdateExhibition() throws JsonProcessingException, URISyntaxException {
+    @Test
+    public void whenGetInvalidExhibitionById_thenReturnNotFound() throws URISyntaxException {
+        mockRestServiceServer.expect(ExpectedCount.once(),
+                requestTo(new URI("http://localhost:7004/api/v1/exhibitions/5ea10d1d-46fb-4374-a39c-27d643aa37e4")))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+        String url = "/api/v1/exhibitions/5ea10d1d-46fb-4374-a39c-27d643aa37e4";
+        webTestClient.get().uri(url)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Unknown exhibition id 5ea10d1d-46fb-4374-a39c-27d643aa37e4");
+    }
+
+    @Test
+    public void whenCreateExhibition_thenReturnExhibition() throws URISyntaxException, JsonProcessingException {
+        // Get gallery
+
         GalleryResponseModel galleryResponseModel = GalleryResponseModel.builder()
-                .galleryId("23456")
-                .name("Quebec's Gallery")
-                .openFrom("Wednesday 12:00 AM")
-                .openUntil("Sunday 6:00 PM")
-                .city("Brossard")
-                .province("Quebec")
-                .country("Canada")
-                .postalCode("J4W 1W6")
+                .galleryId("ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8")
+                .name("Art Gallery of Montreal")
+                .openFrom("Monday")
+                .openUntil("Friday")
                 .build();
 
         PaintingResponseModel paintingResponseModel = PaintingResponseModel.builder()
-                .paintingId("111111")
-                .title("Painting 1")
-                .yearCreated(2020)
-                .painterId("111112")
-                .galleryId("23456")
+                .paintingId("3ed9654a-b773-4aa0-ae6b-b22afb636c8d")
+                .title("The Night")
+                .yearCreated(1889)
+                .painterId("4c80444-5acf-4d57-8902-9f55255e9e55")
+                .galleryId("ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8")
                 .build();
-        PaintingResponseModel paintingResponseModel2 = PaintingResponseModel.builder()
-                .paintingId("222222")
-                .title("Painting 1")
-                .yearCreated(2020)
-                .painterId("111112")
-                .galleryId("23456")
-                .build();
-        List<PaintingResponseModel> paintings = new ArrayList<>(Arrays.asList(paintingResponseModel, paintingResponseModel2));
 
         SculptureResponseModel sculptureResponseModel = SculptureResponseModel.builder()
-                .sculptureId("333333")
-                .title("Sculpture 1")
+                .sculptureId("acf18748-b00c-4f3a-9d0b-b1b1fdf9c244")
+                .title("Chair")
                 .material("Wood")
-                .texture("Smooth")
-                .galleryId("23456")
+                .texture("Rough")
+                .galleryId("ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8")
                 .build();
 
-        List<SculptureResponseModel> sculptures = new ArrayList<>(Arrays.asList(sculptureResponseModel));
+        SculptureResponseModel sculptureResponseModel2 = SculptureResponseModel.builder()
+                .sculptureId("04875097-6dab-451c-b08d-b1e48da9ded4")
+                .title("Face")
+                .material("Stone")
+                .texture("Smooth")
+                .galleryId("ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8")
+                .build();
 
-        // create an exhibition
         ExhibitionRequestModel exhibitionRequestModel = ExhibitionRequestModel.builder()
-                .exhibitionName("Exhibition 1")
-                .roomNumber(123)
-                .duration(120)
+                .exhibitionName("Ontario's Exhibition")
+                .roomNumber(203)
+                .duration(60)
                 .startDay("Monday")
-                .endDay("Saturday")
-                .paintings(paintings)
-                .sculptures(sculptures)
+                .endDay("Wednesday")
+                .paintings(Arrays.asList(paintingResponseModel))
+                .sculptures(Arrays.asList(sculptureResponseModel, sculptureResponseModel2))
                 .build();
 
         mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7001/api/v1/galleries/23456")))
+                        requestTo(new URI("http://localhost:7001/api/v1/galleries/ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8")))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withStatus(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(mapper.writeValueAsString(galleryResponseModel)));
 
-                    String url2 = "/api/v1/exhibitions/5ea10d1d-46fb-4374-a39c-27d643aa37e3";
-                    webTestClient.put().uri(url2)
-                            .bodyValue(exhibitionRequestModel)
-                            .exchange()
-                            .expectStatus().isOk()
-                            .expectBody(Exhibition.class);
-
-    }*/
-
-    // DELETE EXHIBITION
-    @Test
-    public void whenExhibitionIdIsValid_thenDeleteExhibition() throws URISyntaxException {
-        mockRestServiceServer.expect(ExpectedCount.once(),
-                        requestTo(new URI("http://localhost:7004/api/v1/exhibitions/5ea10d1d-46fb-4374-a39c-27d643aa37e3")))
-                .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withStatus(HttpStatus.OK));
-
-        String url = "/api/v1/exhibitions/5ea10d1d-46fb-4374-a39c-27d643aa37e3";
-        webTestClient.delete().uri(url)
+        webTestClient.post().uri("/api/v1/exhibitions/galleries/ea85d3ba-d708-4ff3-bbbb-dd9c5c77b8e8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(exhibitionRequestModel)
                 .exchange()
-                .expectStatus().isNoContent();
-
-        webTestClient.get().uri(url)
-                .exchange()
-                .expectStatus().isNotFound();
+                .expectStatus().isCreated()
+                .expectBody(ExhibitionResponseModel.class)
+                .value(responseModel -> {
+                    assertThat(responseModel.getExhibitionId()).isNotNull();
+                    assertThat(responseModel.getExhibitionName()).isEqualTo("Ontario's Exhibition");
+                    assertThat(responseModel.getRoomNumber()).isEqualTo(203);
+                    assertThat(responseModel.getDuration()).isEqualTo(60);
+                    assertThat(responseModel.getStartDay()).isEqualTo("Monday");
+                    assertThat(responseModel.getEndDay()).isEqualTo("Wednesday");
+                    assertThat(responseModel.getPaintings().size()).isEqualTo(1);
+                    assertThat(responseModel.getSculptures().size()).isEqualTo(2);
+                });
     }
-
 }

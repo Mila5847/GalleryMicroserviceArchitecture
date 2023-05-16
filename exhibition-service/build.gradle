@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.gallery.exhibitionservice'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 sourceCompatibility = '17'
 ext {
 	mapstructVersion = "1.5.3.Final"
@@ -35,20 +35,20 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-hateoas' // added for HATEOAS from spring initializer
 }
 
-jacoco{
+jacoco {
 	toolVersion = "0.8.8"
 }
+
 jacocoTestReport {
 	dependsOn test
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: [
-//"com/movielister/**/MovieDetailsServiceApplication.class",
-// "**/*MapperImpl.class"
 			])
 		}))
 	}
 }
+
 jacocoTestCoverageVerification {
 	violationRules {
 		rule {
@@ -62,7 +62,7 @@ jacocoTestCoverageVerification {
 test.finalizedBy jacocoTestReport
 check.dependsOn jacocoTestCoverageVerification
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
 	testLogging {
 		events "passed", "skipped", "failed"

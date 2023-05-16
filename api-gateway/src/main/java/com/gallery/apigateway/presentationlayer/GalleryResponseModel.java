@@ -1,6 +1,7 @@
 package com.gallery.apigateway.presentationlayer;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
@@ -10,6 +11,7 @@ import org.springframework.hateoas.RepresentationModel;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class GalleryResponseModel extends RepresentationModel<GalleryResponseModel>{
     String galleryId;
     String name;

@@ -59,6 +59,10 @@ public class ExhibitionServiceImpl implements ExhibitionService {
             throw new ExistingGalleryNotFoundException("Unknown gallery id " + galleryId);
         }
 
+        if(exhibitionRepository.existsByExhibitionName(exhibitionRequestModel.getExhibitionName())){
+            throw new ExistingExhibitionNameException("Exhibition with name " + exhibitionRequestModel.getExhibitionName() + " already exists");
+        }
+
         for (PaintingResponseModel painting: exhibitionRequestModel.getPaintings()) {
             if(exhibitionRepository.existsByPaintings_PaintingId(painting.getPaintingId())){
                 throw new PaintingAlreadyInExhibition("The painting with id " + painting.getPaintingId() + " is already in an exhibition");

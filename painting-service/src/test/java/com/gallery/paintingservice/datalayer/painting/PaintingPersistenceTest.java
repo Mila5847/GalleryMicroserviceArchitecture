@@ -1,7 +1,5 @@
 package com.gallery.paintingservice.datalayer.painting;
 
-import com.gallery.paintingservice.datalayer.painter.Painter;
-import com.gallery.paintingservice.datalayer.painter.PainterIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

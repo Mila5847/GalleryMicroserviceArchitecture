@@ -2,16 +2,14 @@ package com.gallery.apigateway.presentationlayer.exhibition;
 
 import com.gallery.apigateway.presentationlayer.PaintingResponseModel;
 import com.gallery.apigateway.presentationlayer.SculptureResponseModel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode(callSuper = false)
 public class ExhibitionResponseModel {
 

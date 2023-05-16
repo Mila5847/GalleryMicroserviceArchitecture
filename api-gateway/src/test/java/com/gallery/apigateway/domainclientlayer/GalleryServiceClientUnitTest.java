@@ -1,29 +1,19 @@
-package com.gallery.exhibitionservice.presentationlayer.domainclientlayer;
+package com.gallery.apigateway.domainclientlayer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gallery.exhibitionservice.domainclientlayer.GalleryRequestModel;
-import com.gallery.exhibitionservice.domainclientlayer.GalleryResponseModel;
-import com.gallery.exhibitionservice.domainclientlayer.GalleryServiceClient;
-import com.gallery.exhibitionservice.utils.HttpErrorInfo;
-import com.gallery.exhibitionservice.utils.exceptions.InvalidInputException;
-import com.gallery.exhibitionservice.utils.exceptions.NotFoundException;
+import com.gallery.apigateway.presentationlayer.GalleryRequestModel;
+import com.gallery.apigateway.presentationlayer.GalleryResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.web.client.ResponseCreator;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 public class GalleryServiceClientUnitTest {
     private RestTemplate restTemplate;

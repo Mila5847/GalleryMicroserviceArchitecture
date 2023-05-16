@@ -25,6 +25,17 @@ public class GlobalControllerExceptionHandler {
         return createHttpErrorInfo(NOT_FOUND, request, ex);
     }
 
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(ExistingExhibitionNameException.class) //when this exception happen, this function would be called
+    public HttpErrorInfo handleExistingExhibitionNameException(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(BAD_REQUEST, request, ex);
+    }
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(ExistingGalleryNotFoundException.class) //when this exception happen, this function would be called
+    public HttpErrorInfo handleExistingGalleryNotFoundException(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(NOT_FOUND, request, ex);
+    }
+
     @ResponseStatus(UNPROCESSABLE_ENTITY) //422
     @ExceptionHandler(InvalidInputException.class) //when this exception happen, this function would be called
     public HttpErrorInfo handleInvalidInputException(WebRequest request, Exception ex) {

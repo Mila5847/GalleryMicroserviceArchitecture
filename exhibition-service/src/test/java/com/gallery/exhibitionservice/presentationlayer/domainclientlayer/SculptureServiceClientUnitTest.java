@@ -2,16 +2,19 @@ package com.gallery.exhibitionservice.presentationlayer.domainclientlayer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gallery.exhibitionservice.domainclientlayer.*;
+import com.gallery.exhibitionservice.utils.exceptions.InvalidInputException;
+import com.gallery.exhibitionservice.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 public class SculptureServiceClientUnitTest {
 
@@ -26,8 +29,7 @@ public class SculptureServiceClientUnitTest {
     void setUp() {
         restTemplate = Mockito.mock(RestTemplate.class);
         sculptureServiceClient = new SculptureServiceClient(restTemplate, objectMapper, "localhost", "8080");
-        this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
+        this.objectMapper = new ObjectMapper();
         this.SCULPTURE_SERVICE_BASE_URL = "http://" + "localhost" + ":" + "8080" + "/api/v1/galleries";
     }
 
@@ -56,18 +58,38 @@ public class SculptureServiceClientUnitTest {
     }
 
     @Test
-    void getAllSculptures_ThrowsException() {
-        String galleryId = "1";
+    void getAllSculptures_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
 
-            when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures", SculptureResponseModel[].class))
-                    .thenThrow(new HttpClientErrorException(NOT_FOUND));
+        when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + "1" + "/sculptures", SculptureResponseModel[].class))
+                .thenThrow(exception);
 
-        assertThrows(NullPointerException.class, () -> sculptureServiceClient.getAllSculpturesInGallery(galleryId));
+        assertThrows(NotFoundException.class, () -> sculptureServiceClient.getAllSculpturesInGallery("1"));
+    }
+
+    @Test
+    void getAllSculptures_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + "1" + "/sculptures", SculptureResponseModel[].class))
+                .thenThrow(exception);
+
+        assertThrows(InvalidInputException.class, () -> sculptureServiceClient.getAllSculpturesInGallery("1"));
+    }
+
+    @Test
+    void getAllSculptures_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        HttpClientErrorException exception = new HttpClientErrorException(BAD_REQUEST, "");
+
+        when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + "1" + "/sculptures", SculptureResponseModel[].class))
+                .thenThrow(exception);
+
+        assertThrows(HttpClientErrorException.class, () -> sculptureServiceClient.getAllSculpturesInGallery("1"));
     }
 
     @Test
     void getSculptureReturnsSculpture() {
-        String sculptureId = "1";
+        String sculptureId = "123";
         SculptureResponseModel expectedSculptureResponseModel = SculptureResponseModel.builder()
                 .sculptureId("123")
                 .title("Title 1")
@@ -82,15 +104,36 @@ public class SculptureServiceClientUnitTest {
         assertEquals(expectedSculptureResponseModel, actualSculptureResponseModel);
     }
 
+
     @Test
-    void getSculpture_ThrowsException() {
-        String galleryId = "1";
+    void getSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
         String sculptureId = "123";
+        when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + "1" + "/sculptures" + "/" + sculptureId, SculptureResponseModel.class))
+                .thenThrow(new HttpClientErrorException(BAD_REQUEST));
 
-        when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId, SculptureResponseModel.class))
-                .thenThrow(new HttpClientErrorException(NOT_FOUND));
+        assertThrows(HttpClientErrorException.class, () -> sculptureServiceClient.getSculptureById("1", sculptureId));
+    }
 
-        assertThrows(NullPointerException.class, () -> sculptureServiceClient.getSculptureById(galleryId, sculptureId));
+    @Test
+    void getSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String sculptureId = "123";
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
+
+        when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + "1" + "/sculptures" + "/" + sculptureId, SculptureResponseModel.class))
+                .thenThrow(exception);
+
+        assertThrows(NotFoundException.class, () -> sculptureServiceClient.getSculptureById("1", sculptureId));
+    }
+
+    @Test
+    void getSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String sculptureId = "123";
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        when(restTemplate.getForObject(SCULPTURE_SERVICE_BASE_URL + "/" + "1" + "/sculptures" + "/" + sculptureId, SculptureResponseModel.class))
+                .thenThrow(exception);
+
+        assertThrows(InvalidInputException.class, () -> sculptureServiceClient.getSculptureById("1", sculptureId));
     }
 
     @Test
@@ -114,20 +157,49 @@ public class SculptureServiceClientUnitTest {
         SculptureResponseModel actualSculptureResponseModel = sculptureServiceClient.addSculptureInGallery(galleryId, sculptureRequestModel);
         assertEquals(expectedSculptureResponseModel, actualSculptureResponseModel);
     }
-
     @Test
-    void addSculpture_ThrowsException() {
+    void addSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
         String galleryId = "1";
         SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
                 .title("Title 1")
                 .texture("Texture 1")
                 .material("Material 1")
                 .build();
+        when(restTemplate.postForObject(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures", sculptureRequestModel, SculptureResponseModel.class))
+                .thenThrow(new HttpClientErrorException(BAD_REQUEST));
+        assertThrows(HttpClientErrorException.class, () -> sculptureServiceClient.addSculptureInGallery(galleryId, sculptureRequestModel));
+    }
+
+    @Test
+    void addSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String galleryId = "1";
+        SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
+                .title("Title 1")
+                .texture("Texture 1")
+                .material("Material 1")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
 
         when(restTemplate.postForObject(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures", sculptureRequestModel, SculptureResponseModel.class))
                 .thenThrow(new HttpClientErrorException(NOT_FOUND));
 
-        assertThrows(NullPointerException.class, () -> sculptureServiceClient.addSculptureInGallery(galleryId, sculptureRequestModel));
+        assertThrows(NotFoundException.class, () ->sculptureServiceClient.addSculptureInGallery(galleryId, sculptureRequestModel));
+    }
+
+    @Test
+    void addSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String galleryId = "1";
+        SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
+                .title("Title 1")
+                .texture("Texture 1")
+                .material("Material 1")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        when(restTemplate.postForObject(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures", sculptureRequestModel, SculptureResponseModel.class))
+                .thenThrow(new HttpClientErrorException(UNPROCESSABLE_ENTITY));
+
+        assertThrows(InvalidInputException.class, () -> sculptureServiceClient.addSculptureInGallery(galleryId, sculptureRequestModel));
     }
 
     @Test
@@ -145,7 +217,7 @@ public class SculptureServiceClientUnitTest {
     }
 
     @Test
-    void updateSculpture_ThrowsException() {
+    void updateSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
         String galleryId = "1";
         String sculptureId = "123";
         SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
@@ -153,10 +225,41 @@ public class SculptureServiceClientUnitTest {
                 .texture("Texture 1")
                 .material("Material 1")
                 .build();
-
-        doThrow(new HttpClientErrorException(NOT_FOUND))
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
+        Mockito.doThrow(exception)
                 .when(restTemplate).put(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId, sculptureRequestModel);
-        assertThrows(NullPointerException.class, () -> sculptureServiceClient.updateSculptureInGallery(galleryId, sculptureId, sculptureRequestModel));
+        assertThrows(NotFoundException.class, () -> sculptureServiceClient.updateSculptureInGallery(galleryId, sculptureId, sculptureRequestModel));
+    }
+
+    @Test
+    void updateSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String galleryId = "1";
+        String sculptureId = "123";
+        SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
+                .title("Title 1")
+                .texture("Texture 1")
+                .material("Material 1")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+        Mockito.doThrow(exception)
+                .when(restTemplate).put(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId, sculptureRequestModel);
+
+        assertThrows(InvalidInputException.class, () -> sculptureServiceClient.updateSculptureInGallery(galleryId, sculptureId, sculptureRequestModel));
+    }
+
+    @Test
+    void updateSculpture_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String galleryId = "1";
+        String sculptureId = "123";
+        SculptureRequestModel sculptureRequestModel = SculptureRequestModel.builder()
+                .title("Title 1")
+                .texture("Texture 1")
+                .material("Material 1")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(BAD_REQUEST, "");
+        Mockito.doThrow(exception)
+                .when(restTemplate).put(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId, sculptureRequestModel);
+        assertThrows(HttpClientErrorException.class, () -> sculptureServiceClient.updateSculptureInGallery(galleryId, sculptureId, sculptureRequestModel));
     }
 
     @Test
@@ -184,13 +287,36 @@ public class SculptureServiceClientUnitTest {
     }
 
     @Test
-    void deleteSculpture_ThrowsException() {
+    void deleteGalleries_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
         String galleryId = "1";
         String sculptureId = "123";
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
 
-        doThrow(new HttpClientErrorException(NOT_FOUND))
-                .when(restTemplate).delete(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId);
-        assertThrows(NullPointerException.class, () -> sculptureServiceClient.deleteSculpture(galleryId, sculptureId));
+        Mockito.doThrow(exception).when(restTemplate).delete(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId);
+
+        assertThrows(NotFoundException.class, () -> sculptureServiceClient.deleteSculpture(galleryId, sculptureId));
+    }
+
+    @Test
+    void deleteGallery_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String galleryId = "1";
+        String sculptureId = "123";
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        Mockito.doThrow(exception).when(restTemplate).delete(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId);
+
+        assertThrows(InvalidInputException.class, () ->sculptureServiceClient.deleteSculpture(galleryId, sculptureId));
+    }
+
+    @Test
+    void deleteGallery_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String galleryId = "1";
+        String sculptureId = "123";
+        HttpClientErrorException exception = new HttpClientErrorException(BAD_REQUEST, "");
+
+        Mockito.doThrow(exception).when(restTemplate).delete(SCULPTURE_SERVICE_BASE_URL + "/" + galleryId + "/sculptures" + "/" + sculptureId);
+
+        assertThrows(HttpClientErrorException.class, () -> sculptureServiceClient.deleteSculpture(galleryId, sculptureId));
     }
 
 

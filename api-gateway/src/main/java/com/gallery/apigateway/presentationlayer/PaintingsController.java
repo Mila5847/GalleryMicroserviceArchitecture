@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.hateoas.Link;
 
 @Slf4j
 @RestController
@@ -28,7 +29,7 @@ public class PaintingsController {
             value = "/{galleryId}/paintings/{paintingId}",
             produces = "application/json"
     )
-    ResponseEntity<PaintingPainterResponseModel> getPaintingsInGallery(@PathVariable String galleryId, @PathVariable String paintingId){
+    ResponseEntity<PaintingPainterResponseModel> getPaintingByIdInGallery(@PathVariable String galleryId, @PathVariable String paintingId){
         return ResponseEntity.ok().body(paintingsService.getPaintingAggregateByIdInGallery(galleryId, paintingId));
     }
 

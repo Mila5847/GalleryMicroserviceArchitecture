@@ -36,26 +36,24 @@ public class PaintingServiceClient {
         try {
             String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings";
             paintingResponseModels = restTemplate.getForObject(url, PaintingResponseModel[].class);
-            log.debug("HERE " + PAINTING_SERVICE_BASE_URL);
-            log.debug("5. Received in API-Gateway Painting Service Client getPaintingsInGallery");
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in API-Gateway Painting Service Client getAllGalleries");
+
             throw handleHttpClientException(ex);
         }
         return paintingResponseModels;
     }
 
     public PaintingPainterResponseModel getPaintingAggregateById(String galleryId, String paintingId) {
-        log.debug("GOT INTO GET-PAINTING-AGGREGATE-BY-ID");
+
         PaintingPainterResponseModel paintingPainterResponseModel;
-        log.debug("GOT INTO GET-PAINTING-AGGREGATE-BY-ID TRY STATEMENT");
+
         try {
             String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings/" + paintingId;
             paintingPainterResponseModel = restTemplate
                     .getForObject(url, PaintingPainterResponseModel.class);
-            log.debug("5. Received in API-Gateway Painting Service Client getPaintingAggregateById with paintingResponseModel with id: " + paintingPainterResponseModel.getPaintingResponseModel().getPaintingId());
+
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Caught an exception in API-Gateway Painting Service Client.");
+
             throw handleHttpClientException(ex);
         }
         return paintingPainterResponseModel;
@@ -67,9 +65,9 @@ public class PaintingServiceClient {
             String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/painters/" + painterId + "/paintings";
             paintingsOfPainterResponseModel = restTemplate
                     .getForObject(url, PaintingsOfPainterResponseModel.class);
-            log.debug("5. Received in API-Gateway Painting Service Client getPaintingAggregateByPainterIdInGallery with painter id" + paintingsOfPainterResponseModel.getPainterId());
+
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Caught an exception in API-Gateway Painting Service Client getPaintingAggregateByPainterIdInGallery");
+
             throw handleHttpClientException(ex);
         }
         return paintingsOfPainterResponseModel;
@@ -82,9 +80,8 @@ public class PaintingServiceClient {
             paintingPainterResponseModel =
                     restTemplate.postForObject(url, paintingRequestModel,
                             PaintingPainterResponseModel.class);
-            log.debug("5. Received in API-Gateway Painting Service Client addPaintingInGallery");
+
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in API-Gateway Painting Service Client addPaintingInGallery");
             throw handleHttpClientException(ex);
         }
         return paintingPainterResponseModel;
@@ -97,9 +94,7 @@ public class PaintingServiceClient {
             paintingPainterResponseModel =
                     restTemplate.postForObject(url, painterRequestModel,
                             PaintingPainterResponseModel.class);
-            log.debug("5. Received in API-Gateway Painting Service Client addPainterToPaintingInGallery");
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in API-Gateway Painting Service Client addPainterToPaintingInGallery");
             throw handleHttpClientException(ex);
         }
         return paintingPainterResponseModel;
@@ -109,9 +104,7 @@ public class PaintingServiceClient {
         try {
             String url = PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings/" + paintingId;
             restTemplate.put(url, paintingRequestModel);
-            log.debug("5. Received in API-Gateway Paintings Service Client updatePainting");
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in API-Gateway Paintings Service Client updatePainting");
             throw handleHttpClientException(ex);
         }
     }
@@ -151,21 +144,13 @@ public class PaintingServiceClient {
 
     private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
         if (ex.getStatusCode() == NOT_FOUND) {
-            return new NotFoundException(getErrorMessage(ex));
+            return new NotFoundException(ex.getMessage());
         }
         if (ex.getStatusCode() == UNPROCESSABLE_ENTITY) {
-            return new InvalidInputException(getErrorMessage(ex));
+            return new InvalidInputException(ex.getMessage());
         }
         log.warn("Got a unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
         log.warn("Error body: {}", ex.getResponseBodyAsString());
         return ex;
-    }
-    private String getErrorMessage(HttpClientErrorException ex) {
-        try {
-            return objectMapper.readValue(ex.getResponseBodyAsString(), HttpErrorInfo.class).getMessage();
-        }
-        catch (IOException ioex) {
-            return ioex.getMessage();
-        }
     }
 }

@@ -26,14 +26,13 @@ public class ExhibitionController {
 
     @PostMapping("/galleries/{galleryId}")
     ResponseEntity<ExhibitionResponseModel> createExhibition(@PathVariable String galleryId, @RequestBody ExhibitionRequestModel exhibitionRequestModel) {
-        log.debug("created");
         return ResponseEntity.status(HttpStatus.CREATED).body(exhibitionService.createExhibition(galleryId, exhibitionRequestModel));
     }
 
     @PutMapping("/{exhibitionId}")
-    ResponseEntity<ExhibitionResponseModel> updateExhibition(@PathVariable String exhibitionId, @RequestBody ExhibitionRequestModel exhibitionRequestModel) {
+    ResponseEntity<Void> updateExhibition(@PathVariable String exhibitionId, @RequestBody ExhibitionRequestModel exhibitionRequestModel) {
         exhibitionService.updateExhibition(exhibitionId, exhibitionRequestModel);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{exhibitionId}")

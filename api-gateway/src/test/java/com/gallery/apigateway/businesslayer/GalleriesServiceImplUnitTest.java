@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.HttpClientErrorException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -128,4 +129,5 @@ class GalleriesServiceImplUnitTest {
 
         verify(galleryServiceClient, times(1)).deleteGallery(galleryId);
     }
+
 }

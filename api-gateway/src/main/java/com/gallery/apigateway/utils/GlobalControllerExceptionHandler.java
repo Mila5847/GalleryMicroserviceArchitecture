@@ -1,5 +1,6 @@
 package com.gallery.apigateway.utils;
 
+import com.gallery.apigateway.utils.exceptions.ExistingGalleryNotFoundException;
 import com.gallery.apigateway.utils.exceptions.InvalidInputException;
 import com.gallery.apigateway.utils.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,12 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(InvalidInputException.class)
     public HttpErrorInfo handleInvalidInputException(WebRequest request, Exception ex) {
         return createHttpErrorInfo(UNPROCESSABLE_ENTITY, request, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(ExistingGalleryNotFoundException.class) //when this exception happen, this function would be called
+    public HttpErrorInfo handleExistingGalleryNotFoundException(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(NOT_FOUND, request, ex);
     }
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, WebRequest request, Exception ex) {

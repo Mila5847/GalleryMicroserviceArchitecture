@@ -34,8 +34,8 @@ public class ExhibitionServiceImpl implements ExhibitionService{
     }
 
     @Override
-    public ExhibitionResponseModel updateExhibition(String exhibitionId, ExhibitionRequestModel exhibitionRequestModel) {
-        return exhibitionServiceClient.updateExhibition(exhibitionId, exhibitionRequestModel);
+    public void updateExhibition(String exhibitionId, ExhibitionRequestModel exhibitionRequestModel) {
+       exhibitionServiceClient.updateExhibition(exhibitionId, exhibitionRequestModel);
     }
 
     @Override

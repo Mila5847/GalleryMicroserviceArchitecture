@@ -11,7 +11,7 @@ public interface ExhibitionService {
 
     ExhibitionResponseModel getExhibitionById(String exhibitionId);
     ExhibitionResponseModel createExhibition(String galleryId, ExhibitionRequestModel exhibitionRequestModel);
-    ExhibitionResponseModel updateExhibition(String exhibitionId, ExhibitionRequestModel exhibitionRequestModel);
+    void updateExhibition(String exhibitionId, ExhibitionRequestModel exhibitionRequestModel);
     void removeExhibition(String exhibitionId);
 
     void removeAllExhibitions();

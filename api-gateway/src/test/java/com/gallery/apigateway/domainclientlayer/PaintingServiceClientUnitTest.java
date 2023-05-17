@@ -2,6 +2,8 @@ package com.gallery.apigateway.domainclientlayer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gallery.apigateway.presentationlayer.*;
+import com.gallery.apigateway.utils.exceptions.InvalidInputException;
+import com.gallery.apigateway.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,7 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 public class PaintingServiceClientUnitTest {
 
@@ -27,8 +29,7 @@ public class PaintingServiceClientUnitTest {
     public void setUp() {
         restTemplate = Mockito.mock(RestTemplate.class);
         paintingServiceClient = new PaintingServiceClient(restTemplate, objectMapper, "localhost", "8080");
-        this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
+        this.objectMapper = new ObjectMapper();
         this.PAINTING_SERVICE_BASE_URL = "http://" + "localhost" + ":" + "8080" + "/api/v1/galleries";
     }
 
@@ -54,12 +55,35 @@ public class PaintingServiceClientUnitTest {
         PaintingResponseModel[] actualPaintingResponseModels = paintingServiceClient.getPaintingsInGallery("1");
         assertArrayEquals(expectedPaintingResponseModels, actualPaintingResponseModels);
     }
+
+    @Test
+    void getAllPaintings_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
+
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings", PaintingResponseModel[].class))
+                .thenThrow(exception);
+
+        assertThrows(NotFoundException.class, () -> paintingServiceClient.getPaintingsInGallery("1"));
+    }
+
+    @Test
+    void getAllPaintings_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings", PaintingResponseModel[].class))
+                .thenThrow(exception);
+
+        assertThrows(InvalidInputException.class, () ->paintingServiceClient.getPaintingsInGallery("1"));
+    }
+
     @Test
     void getAllPaintings_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
-        when(restTemplate.getForObject( PAINTING_SERVICE_BASE_URL  + "/" + "1" + "/paintings", PaintingResponseModel[].class))
-                .thenThrow(new HttpClientErrorException(NOT_FOUND));
+        HttpClientErrorException exception = new HttpClientErrorException(BAD_REQUEST, "");
 
-        assertThrows(NullPointerException.class, () -> paintingServiceClient.getPaintingsInGallery("1"));
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings", PaintingResponseModel[].class))
+                .thenThrow(exception);
+
+        assertThrows(HttpClientErrorException.class, () ->paintingServiceClient.getPaintingsInGallery("1"));
     }
 
     @Test
@@ -89,11 +113,34 @@ public class PaintingServiceClientUnitTest {
     }
 
     @Test
-    public void getPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
-        when(restTemplate.getForObject( PAINTING_SERVICE_BASE_URL  + "/" + "1" + "/paintings" + "/" + "1", PaintingPainterResponseModel.class))
-                .thenThrow(new HttpClientErrorException(NOT_FOUND));
+    void getPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String paintingId = "1";
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings" + "/" + paintingId, PaintingPainterResponseModel.class))
+                .thenThrow(new HttpClientErrorException(BAD_REQUEST));
 
-        assertThrows(NullPointerException.class, () -> paintingServiceClient.getPaintingAggregateById("1", "1"));
+        assertThrows(HttpClientErrorException.class, () ->  paintingServiceClient.getPaintingAggregateById("1", paintingId));
+    }
+
+    @Test
+    void getPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String paintingId = "1";
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
+
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings" + "/" + paintingId, PaintingPainterResponseModel.class))
+                .thenThrow(exception);
+
+        assertThrows(NotFoundException.class, () ->  paintingServiceClient.getPaintingAggregateById("1", paintingId));
+    }
+
+    @Test
+    void getPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String paintingId = "1";
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings" + "/" + paintingId, PaintingPainterResponseModel.class))
+                .thenThrow(exception);
+
+        assertThrows(InvalidInputException.class, () ->  paintingServiceClient.getPaintingAggregateById("1", paintingId));
     }
 
     @Test
@@ -127,11 +174,34 @@ public class PaintingServiceClientUnitTest {
     }
 
     @Test
-    public void getPaintingAggregateByPainterIdInGallery_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
-        when(restTemplate.getForObject( PAINTING_SERVICE_BASE_URL  + "/" + "1" + "/painters" + "/" + "111" + "/paintings", PaintingsOfPainterResponseModel.class))
-                .thenThrow(new HttpClientErrorException(NOT_FOUND));
+    void getPaintingByPainter_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String painterId = "111";
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/painters" + "/" + painterId + "/paintings", PaintingsOfPainterResponseModel.class))
+                .thenThrow(new HttpClientErrorException(BAD_REQUEST));
 
-        assertThrows(NullPointerException.class, () -> paintingServiceClient.getPaintingAggregateByPainterIdInGallery("1", "111"));
+        assertThrows(HttpClientErrorException.class, () ->  paintingServiceClient.getPaintingAggregateByPainterIdInGallery("1", painterId));
+    }
+
+    @Test
+    void getPaintingByPainter_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String painterId = "111";
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
+
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/painters" + "/" + painterId + "/paintings", PaintingsOfPainterResponseModel.class))
+                .thenThrow(exception);
+
+        assertThrows(NotFoundException.class, () ->  paintingServiceClient.getPaintingAggregateByPainterIdInGallery("1", painterId));
+    }
+
+    @Test
+    void getPaintingByPainter_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String painterId = "111";
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        when(restTemplate.getForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/painters" + "/" + painterId + "/paintings", PaintingsOfPainterResponseModel.class))
+                .thenThrow(exception);
+
+        assertThrows(InvalidInputException.class, () -> paintingServiceClient.getPaintingAggregateByPainterIdInGallery("1", painterId));
     }
 
     @Test
@@ -166,17 +236,45 @@ public class PaintingServiceClientUnitTest {
     }
 
     @Test
-    public void addPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+    void addPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
         PaintingRequestModel paintingRequestModel = PaintingRequestModel.builder()
                 .title("Title 1")
                 .yearCreated(1234)
                 .painterId("111")
                 .build();
+        when(restTemplate.postForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings", paintingRequestModel, PaintingPainterResponseModel.class))
+                .thenThrow(new HttpClientErrorException(BAD_REQUEST));
+        assertThrows(HttpClientErrorException.class, () -> paintingServiceClient.addPaintingInGallery("1", paintingRequestModel));
+    }
+
+    @Test
+    void addPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        PaintingRequestModel paintingRequestModel = PaintingRequestModel.builder()
+                .title("Title 1")
+                .yearCreated(1234)
+                .painterId("111")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
 
         when(restTemplate.postForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings", paintingRequestModel, PaintingPainterResponseModel.class))
                 .thenThrow(new HttpClientErrorException(NOT_FOUND));
 
-        assertThrows(NullPointerException.class, () -> paintingServiceClient.addPaintingInGallery("1", paintingRequestModel));
+        assertThrows(NotFoundException.class, () ->paintingServiceClient.addPaintingInGallery("1", paintingRequestModel));
+    }
+
+    @Test
+    void addPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        PaintingRequestModel paintingRequestModel = PaintingRequestModel.builder()
+                .title("Title 1")
+                .yearCreated(1234)
+                .painterId("111")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        when(restTemplate.postForObject(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings", paintingRequestModel, PaintingPainterResponseModel.class))
+                .thenThrow(new HttpClientErrorException(UNPROCESSABLE_ENTITY));
+
+        assertThrows(InvalidInputException.class, () -> paintingServiceClient.addPaintingInGallery("1", paintingRequestModel));
     }
 
     @Test
@@ -215,7 +313,7 @@ public class PaintingServiceClientUnitTest {
     }
 
     @Test
-    void addPainterToPainting_WhenRestTemplateThrowsHttpClientErrorException_ThrowException(){
+    void addPainterToPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
         String galleryId = "1";
         String paintingId = "123";
 
@@ -225,26 +323,50 @@ public class PaintingServiceClientUnitTest {
                 .birthDate("12-12-1212")
                 .deathDate("12-12-1212")
                 .build();
+        when(restTemplate.postForObject(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId + "/painters", painterRequestModel, PaintingPainterResponseModel.class))
+                .thenThrow(new HttpClientErrorException(BAD_REQUEST));
+        assertThrows(HttpClientErrorException.class, () -> paintingServiceClient.addPainterToPaintingInGallery(galleryId, paintingId, painterRequestModel));
 
-        PaintingResponseModel expectedPaintingResponseModel = PaintingResponseModel.builder()
-                .paintingId("123")
-                .title("Title 1")
-                .yearCreated(1234)
-                .painterId("111")
-                .build();
-        PainterResponseModel expectedPainterResponseModel = PainterResponseModel.builder()
-                .painterId("111")
+    }
+
+    @Test
+    void addPainterToPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String galleryId = "1";
+        String paintingId = "123";
+
+        PainterRequestModel painterRequestModel = PainterRequestModel.builder()
                 .name("Name 1")
                 .origin("Origin 1")
                 .birthDate("12-12-1212")
                 .deathDate("12-12-1212")
                 .build();
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
 
-        PaintingPainterResponseModel expectedPaintingPainterResponseModel = new PaintingPainterResponseModel(expectedPaintingResponseModel, expectedPainterResponseModel);
+        when(restTemplate.postForObject(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId + "/painters", painterRequestModel, PaintingPainterResponseModel.class))
+                .thenThrow(new HttpClientErrorException(NOT_FOUND));
 
-            when(restTemplate.postForObject(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId + "/painters", painterRequestModel, PaintingPainterResponseModel.class))
-                    .thenThrow(new HttpClientErrorException(NOT_FOUND));
-            assertThrows(NullPointerException.class, () -> paintingServiceClient.addPainterToPaintingInGallery(galleryId, paintingId, painterRequestModel));
+        assertThrows(NotFoundException.class, () ->paintingServiceClient.addPainterToPaintingInGallery(galleryId, paintingId, painterRequestModel));
+
+    }
+
+    @Test
+    void addPainterToPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String galleryId = "1";
+        String paintingId = "123";
+
+        PainterRequestModel painterRequestModel = PainterRequestModel.builder()
+                .name("Name 1")
+                .origin("Origin 1")
+                .birthDate("12-12-1212")
+                .deathDate("12-12-1212")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        when(restTemplate.postForObject(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId + "/painters", painterRequestModel, PaintingPainterResponseModel.class))
+                .thenThrow(new HttpClientErrorException(UNPROCESSABLE_ENTITY));
+
+        assertThrows(InvalidInputException.class, () -> paintingServiceClient.addPainterToPaintingInGallery(galleryId, paintingId, painterRequestModel));
+
     }
 
     @Test
@@ -261,28 +383,57 @@ public class PaintingServiceClientUnitTest {
     }
 
     @Test
-    void updatePainting_WhenRestTemplateThrowsHttpClientErrorException_ThrowException(){
-        // Mock the RestTemplate to throw an HttpClientErrorException
-        HttpStatus errorStatus = HttpStatus.NOT_FOUND;
-        HttpClientErrorException exception = new HttpClientErrorException(errorStatus);
-        Mockito.doThrow(exception).when(restTemplate).put(Mockito.anyString(), Mockito.any(PaintingRequestModel.class));
-
-        // Create a mock GalleryRequestModel
+    void updatePainting__whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String galleryId = "1";
+        String paintingId = "123";
         PaintingRequestModel paintingRequestModel = PaintingRequestModel.builder()
                 .title("Title 1")
                 .yearCreated(1234)
                 .painterId("111")
                 .build();
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
+        Mockito.doThrow(exception)
+                .when(restTemplate).put(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId, paintingRequestModel);
+        assertThrows(NotFoundException.class, () -> paintingServiceClient.updatePaintingInGallery(galleryId, paintingId, paintingRequestModel));
+    }
 
-        // Call the updateGallery method and expect an exception to be thrown
-        assertThrows(NullPointerException.class, () -> {
-            paintingServiceClient.updatePaintingInGallery("1", "123", paintingRequestModel);
-        });
+    @Test
+    void updatePainting__whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String galleryId = "1";
+        String paintingId = "123";
+        PaintingRequestModel paintingRequestModel = PaintingRequestModel.builder()
+                .title("Title 1")
+                .yearCreated(1234)
+                .painterId("111")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+        Mockito.doThrow(exception)
+                .when(restTemplate).put(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId, paintingRequestModel);
 
+        assertThrows(InvalidInputException.class, () -> paintingServiceClient.updatePaintingInGallery(galleryId, paintingId, paintingRequestModel));
+    }
+
+    @Test
+    void updatePainting__whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String galleryId = "1";
+        String paintingId = "123";
+        PaintingRequestModel paintingRequestModel = PaintingRequestModel.builder()
+                .title("Title 1")
+                .yearCreated(1234)
+                .painterId("111")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(BAD_REQUEST, "");
+        Mockito.doThrow(exception)
+                .when(restTemplate).put(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId, paintingRequestModel);
+        assertThrows(HttpClientErrorException.class, () -> paintingServiceClient.updatePaintingInGallery(galleryId, paintingId, paintingRequestModel));
     }
 
     @Test
     public void updatePainterOfPaintingInGallery_shouldUpdatePainter(){
+        String galleryId = "1";
+        String paintingId = "123";
+        String painterId = "111";
+
         PainterRequestModel painterRequestModel = PainterRequestModel.builder()
                 .name("Name 1")
                 .origin("Origin 1")
@@ -294,14 +445,14 @@ public class PaintingServiceClientUnitTest {
             paintingServiceClient.updatePainTerOfPaintingInGallery("1", "123", "111", painterRequestModel);
         });
 
-        Mockito.verify(restTemplate, Mockito.times(1)).put(Mockito.anyString(), Mockito.any(PainterRequestModel.class));
+        Mockito.verify(restTemplate, Mockito.times(1)).put(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId + "/painters/" + painterId, painterRequestModel);
     }
 
     @Test
-    public void updatePainterOfPaintingInGallery_shouldThrowException() {
-        HttpStatus errorStatus = HttpStatus.NOT_FOUND;
-        HttpClientErrorException exception = new HttpClientErrorException(errorStatus);
-        Mockito.doThrow(exception).when(restTemplate).put(Mockito.anyString(), Mockito.any(PainterRequestModel.class));
+    void updatePainterOfPainting__whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String galleryId = "1";
+        String paintingId = "123";
+        String painterId = "111";
 
         PainterRequestModel painterRequestModel = PainterRequestModel.builder()
                 .name("Name 1")
@@ -309,11 +460,47 @@ public class PaintingServiceClientUnitTest {
                 .birthDate("12-12-1212")
                 .deathDate("12-12-1212")
                 .build();
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
+        Mockito.doThrow(exception)
+                .when(restTemplate).put(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId + "/painters/" + painterId, painterRequestModel);
+        assertThrows(NotFoundException.class, () ->  paintingServiceClient.updatePainTerOfPaintingInGallery("1", "123", "111", painterRequestModel));
+    }
 
-        // Call the updateGallery method and expect an exception to be thrown
-        assertThrows(NullPointerException.class, () -> {
-            paintingServiceClient.updatePainTerOfPaintingInGallery("1", "123", "111", painterRequestModel);
-        });
+    @Test
+    void updatePainterOfPainting__whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String galleryId = "1";
+        String paintingId = "123";
+        String painterId = "111";
+
+        PainterRequestModel painterRequestModel = PainterRequestModel.builder()
+                .name("Name 1")
+                .origin("Origin 1")
+                .birthDate("12-12-1212")
+                .deathDate("12-12-1212")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+        Mockito.doThrow(exception)
+                .when(restTemplate).put(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId + "/painters/" + painterId, painterRequestModel);
+
+        assertThrows(InvalidInputException.class, () ->  paintingServiceClient.updatePainTerOfPaintingInGallery("1", "123", "111", painterRequestModel));
+    }
+
+    @Test
+    void updatePainterOfPainting__whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String galleryId = "1";
+        String paintingId = "123";
+        String painterId = "111";
+
+        PainterRequestModel painterRequestModel = PainterRequestModel.builder()
+                .name("Name 1")
+                .origin("Origin 1")
+                .birthDate("12-12-1212")
+                .deathDate("12-12-1212")
+                .build();
+        HttpClientErrorException exception = new HttpClientErrorException(BAD_REQUEST, "");
+        Mockito.doThrow(exception)
+                .when(restTemplate).put(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId + "/painters/" + painterId, painterRequestModel);
+        assertThrows(HttpClientErrorException.class, () ->  paintingServiceClient.updatePainTerOfPaintingInGallery("1", "123", "111", painterRequestModel));
     }
 
     @Test
@@ -344,19 +531,40 @@ public class PaintingServiceClientUnitTest {
 
         when(paintingServiceClient.addPaintingInGallery(galleryId, paintingRequestModel)).thenReturn(expectedPaintingPainterResponseModel);
         assertDoesNotThrow(() -> paintingServiceClient.removePaintingByIdInGallery(galleryId, paintingId));
-        assertThrows(NullPointerException.class, () -> paintingServiceClient.getPaintingAggregateById(galleryId, paintingId));
         Mockito.verify(restTemplate, Mockito.times(1)).delete(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId);
     }
 
     @Test
-    public void removePaintingInGallery_shouldThrowException() {
-        HttpStatus errorStatus = HttpStatus.NOT_FOUND;
-        HttpClientErrorException exception = new HttpClientErrorException(errorStatus);
-        Mockito.doThrow(exception).when(restTemplate).delete(Mockito.anyString());
+    void removePainting_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String galleryId = "1";
+        String paintingId = "123";
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
 
-        assertThrows(NullPointerException.class, () -> {
-            paintingServiceClient.removePaintingByIdInGallery("1", "123");
-        });
+        Mockito.doThrow(exception).when(restTemplate).delete(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId);
+
+        assertThrows(NotFoundException.class, () ->paintingServiceClient.removePaintingByIdInGallery(galleryId, paintingId));
+    }
+
+    @Test
+    void removePainting_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String galleryId = "1";
+        String paintingId = "123";
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        Mockito.doThrow(exception).when(restTemplate).delete(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId);
+
+        assertThrows(InvalidInputException.class, () ->paintingServiceClient.removePaintingByIdInGallery(galleryId, paintingId));
+    }
+
+    @Test
+    void removePainting_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String galleryId = "1";
+        String paintingId = "123";
+        HttpClientErrorException exception = new HttpClientErrorException(BAD_REQUEST, "");
+
+        Mockito.doThrow(exception).when(restTemplate).delete(PAINTING_SERVICE_BASE_URL + "/" + galleryId + "/paintings" + "/" + paintingId);
+
+        assertThrows(HttpClientErrorException.class, () -> paintingServiceClient.removePaintingByIdInGallery(galleryId, paintingId));
     }
 
     @Test
@@ -368,13 +576,33 @@ public class PaintingServiceClientUnitTest {
     }
 
     @Test
-public void removePainterOfPaintingInGallery_shouldThrowException() {
-        HttpStatus errorStatus = HttpStatus.NOT_FOUND;
-        HttpClientErrorException exception = new HttpClientErrorException(errorStatus);
-        Mockito.doThrow(exception).when(restTemplate).delete(Mockito.anyString());
+    void removePainterOfPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowNotFoundException() {
+        String painterId = "111";
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not found");
 
-        assertThrows(NullPointerException.class, () -> {
-            paintingServiceClient.removePainterOfPaintingInGallery("1", "123", "111");
-        });
+        Mockito.doThrow(exception).when(restTemplate).delete(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings" + "/" + "123" + "/painters" + "/" + painterId);
+
+        assertThrows(NotFoundException.class, () ->  paintingServiceClient.removePainterOfPaintingInGallery("1", "123", painterId));
     }
+
+    @Test
+    void removePainterOfPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowUnprocessableEntityException() {
+        String painterId = "111";
+        HttpClientErrorException exception = new HttpClientErrorException(UNPROCESSABLE_ENTITY, "Unprocessable Entity");
+
+        Mockito.doThrow(exception).when(restTemplate).delete(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings" + "/" + "123" + "/painters" + "/" + painterId);
+
+        assertThrows(InvalidInputException.class, () -> paintingServiceClient.removePainterOfPaintingInGallery("1", "123", painterId));
+    }
+
+    @Test
+    void removePainterOfPainting_whenRestTemplateThrowsHttpClientErrorException_ThrowException() {
+        String painterId = "111";
+        HttpClientErrorException exception = new HttpClientErrorException(BAD_REQUEST, "");
+
+        Mockito.doThrow(exception).when(restTemplate).delete(PAINTING_SERVICE_BASE_URL + "/" + "1" + "/paintings" + "/" + "123" + "/painters" + "/" + painterId);
+
+        assertThrows(HttpClientErrorException.class, () ->  paintingServiceClient.removePainterOfPaintingInGallery("1", "123", painterId));
+    }
+
 }

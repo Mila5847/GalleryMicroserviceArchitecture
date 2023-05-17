@@ -41,9 +41,7 @@ public class GalleryServiceClient {
         try {
             String url = GALLERY_SERVICE_BASE_URL;
             galleryResponseModels = restTemplate.getForObject(url, GalleryResponseModel[].class);
-            log.debug("5. Received in API-Gateway Gallery Service Client getAllGalleries");
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in API-Gateway Gallery Service Client getAllGalleries");
             throw handleHttpClientException(ex);
         }
         return galleryResponseModels;
@@ -55,9 +53,7 @@ public class GalleryServiceClient {
             galleryResponseModel = restTemplate
                     .getForObject(url, GalleryResponseModel.class);
 
-            log.debug("5. Received in API-Gateway Gallery Service Client getGallery with galleryResponseModel with id: " + galleryResponseModel.getGalleryId());
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Caught an exception in API-Gateway Gallery Service Client getGallery with galleryResponseModel.");
             throw handleHttpClientException(ex);
         }
         return galleryResponseModel;
@@ -71,9 +67,9 @@ public class GalleryServiceClient {
                     restTemplate.postForObject(url, galleryRequestModel,
                             GalleryResponseModel.class);
 
-            log.debug("5. Received in API-Gateway Gallery Service Client addGallery");
+
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in in API-Gateway Gallery Service Client addGallery");
+
             throw handleHttpClientException(ex);
         }
         return galleryResponseModel;
@@ -83,9 +79,9 @@ public class GalleryServiceClient {
         try {
             String url = GALLERY_SERVICE_BASE_URL + "/" + galleryId;
             restTemplate.put(url, galleryRequestModel);
-            log.debug("5. Received in API-Gateway Gallery Service Client updateGallery");
+
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in API-Gateway Gallery Service Client updateGallery");
+
             throw handleHttpClientException(ex);
         }
     }
@@ -94,30 +90,22 @@ public class GalleryServiceClient {
         try {
             String url = GALLERY_SERVICE_BASE_URL + "/" + galleryId;
             restTemplate.delete(url);
-            log.debug("5. Received in API-Gateway Gallery Service Client deleteGallery with galleryId : " + galleryId);
+
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Exception caught in API-Gateway Gallery Service Client deleteGallery");
+
             throw handleHttpClientException(ex);
         }
     }
 
     private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
         if (ex.getStatusCode() == NOT_FOUND) {
-            return new NotFoundException(getErrorMessage(ex));
+            return new NotFoundException(ex.getMessage());
         }
         if (ex.getStatusCode() == UNPROCESSABLE_ENTITY) {
-            return new InvalidInputException(getErrorMessage(ex));
+            return new InvalidInputException(ex.getMessage());
         }
         log.warn("Got a unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
         log.warn("Error body: {}", ex.getResponseBodyAsString());
         return ex;
-    }
-    private String getErrorMessage(HttpClientErrorException ex) {
-        try {
-            return objectMapper.readValue(ex.getResponseBodyAsString(), HttpErrorInfo.class).getMessage();
-        }
-        catch (IOException ioex) {
-            return ioex.getMessage();
-        }
     }
 }

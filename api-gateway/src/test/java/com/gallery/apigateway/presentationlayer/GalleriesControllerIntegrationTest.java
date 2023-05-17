@@ -56,7 +56,6 @@ class GalleriesControllerIntegrationTest {
                 .postalCode("A1A 1A1")
                 .country("Country")
                 .build();
-        ResponseEntity<GalleryResponseModel> responseEntity = ResponseEntity.ok(galleryResponse);
 
         mockRestServiceServer.expect(ExpectedCount.once(),
                 requestTo("http://localhost:7001/api/v1/galleries/" + galleryId))

@@ -80,19 +80,13 @@ public class ExhibitionServiceClient {
     }
 
     // update an existing exhibition
-    public ExhibitionResponseModel updateExhibition(String exhibitionId, ExhibitionRequestModel exhibitionRequestModel) {
-        ExhibitionResponseModel exhibitionResponseModel1;
+    public void updateExhibition(String exhibitionId, ExhibitionRequestModel exhibitionRequestModel) {
         try {
             String url = EXHIBITION_SERVICE_BASE_URL + "/" + exhibitionId;
             restTemplate.put(url, exhibitionRequestModel);
-            exhibitionResponseModel1 = restTemplate
-                    .getForObject(url, ExhibitionResponseModel.class);
-            log.debug("5. Received in API-Gateway Gallery Service Client updateGallery with galleryResponseModel with id: " + exhibitionResponseModel1.getExhibitionId());
         } catch (HttpClientErrorException ex) {
-            log.debug("5. Caught an exception in API-Gateway Gallery Service Client updateGallery with galleryResponseModel.");
             throw handleHttpClientException(ex);
         }
-        return exhibitionResponseModel1;
     }
 
     // delete an existing exhibition
@@ -118,21 +112,13 @@ public class ExhibitionServiceClient {
 
     private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
         if (ex.getStatusCode() == NOT_FOUND) {
-            return new NotFoundException(getErrorMessage(ex));
+            return new NotFoundException(ex.getMessage());
         }
         if (ex.getStatusCode() == UNPROCESSABLE_ENTITY) {
-            return new InvalidInputException(getErrorMessage(ex));
+            return new InvalidInputException(ex.getMessage());
         }
         log.warn("Got a unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
         log.warn("Error body: {}", ex.getResponseBodyAsString());
         return ex;
-    }
-    private String getErrorMessage(HttpClientErrorException ex) {
-        try {
-            return objectMapper.readValue(ex.getResponseBodyAsString(), HttpErrorInfo.class).getMessage();
-        }
-        catch (IOException ioex) {
-            return ioex.getMessage();
-        }
     }
 }

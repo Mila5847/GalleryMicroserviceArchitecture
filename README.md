@@ -1,7 +1,7 @@
 # Gallery Microservice Architecture
 
 ## Project Overview
-Done throughout my second year of College in Computer Science, the Gallery Microservice Architecture project's purpose was to develop a 3-tier web application for a gallery to be able to view, manage, and modify artworks. 
+Done throughout my second year of College in Computer Science for my Web Services and Distributed Computing class, the Gallery Microservice Architecture project's purpose was to develop a 3-tier web application for a gallery to be able to view, manage, and modify artworks. 
 
 ## Table of Contents
 - [Project Description](#project-description)
@@ -14,7 +14,7 @@ Done throughout my second year of College in Computer Science, the Gallery Micro
 
 <a name="project-description"></a>
 ## Project Description 
-The project is composed of 5 microservices: api-gateway service, exhibition service, and 3 low-level microservices of exhibition
+The project is developed using Java and IntelliJ IDEA Ultimate 2022.2.3. It is composed of 5 microservices: api-gateway service, exhibition service, and 3 low-level microservices of exhibition
 (painting service, sculpture service, gallery service). Each microservice has its own database. 
 
 ### Domain-Driven Desing Model

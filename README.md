@@ -9,12 +9,13 @@ Done throughout my second year of College in Computer Science, the Gallery Micro
 - [Set Up](#set-up)
 - [Usage](#usage)
 - [Features](#features)
+- [Future Improvements Ideas](#improvements)
 - [Acknowledgments](#acknowledgments)
 
 <a name="project-description"></a>
 ## Project Description 
 The project is composed of 5 microservices: api-gateway service, exhibition service, and 3 low-level microservices of exhibition
-(painting-service, sculpture-service, gallery-service). Each microservice has its own database. 
+(painting service, sculpture service, gallery service). Each microservice has its own database. 
 
 ### Domain-Driven Desing Model
 ![gallery_ddd_model](https://github.com/Mila5847/GalleryMicroserviceArchitecture/assets/46633364/97e183a8-46fb-458e-9168-1521f7bba117)
@@ -43,7 +44,7 @@ The project is composed of 5 microservices: api-gateway service, exhibition serv
 
 #### Framework & Dependencies
 Spring Framework
-- Testing done with mock objects and WebTestClient dependency.
+- Testing was done with mock objects and WebTestClient dependency (integration tests, persistence tests, and unit tests)
 - Uses Gradle, an open-source build automation tool and dependency management system.
 
 #### Libraries
@@ -120,6 +121,13 @@ The 3-layer web app allows to do the following
   - Sculpture with existing name cannot be added again
 - View, create, update, delete an exhibition composed of paintings and sculptures from a gallery. 
 - Update of exhibition can consist of upating the exhibition's information or add/remove paintings and sculptures.
+
+<a name="improvements"></a>
+## Future Improvements Ideas
+- Currently, the aggregator is supposed to be the exhibition service. However, the exhibition service does not actually get anything
+from the low-level microservices, so I would like to make it a real aggregator which gets paintings, and sculptures in a gallery, for example.
+- I would like to do more testing, especially testing my exceptions.
+- I would like to expand it with more microservices. For example, adding a tickets microservice to handle the visitors' visits. 
 
 <a name="acknowledgments"></a>
 ## Acknowledgments 
